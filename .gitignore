@@ -1,0 +1,15 @@
+# Directories
+.vs/
+
+# Files
+*.user
+*.exe
+*.obj
+*.tlog
+*.idb
+*.ilk
+*.pdb
+*.ipch
+*.db
+*.suo
+*.log
