@@ -1,4 +1,0 @@
-﻿  MNL_SignIn.cpp
-C:\Users\Thomas\Desktop\Uni Temp\CODE\MyNovelList\MNL_SignIn.cpp(9,1): warning C4829: Possibly incorrect parameters to function main. Consider 'int main(Platform::Array<Platform::String^>^ argv)'
-  DoubleLinkedList.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
-  MyNovelList.vcxproj -> C:\Users\Thomas\Desktop\Uni Temp\CODE\Debug\MyNovelList.exe
