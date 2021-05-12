@@ -19,14 +19,48 @@ namespace MyNovelList {
 	using namespace System::Data;
 	using namespace System::Drawing;
 
-	//Global variable used to create user data file based on whoever logs in
+	// Global variable used to create user data file based on whoever logs in
 	std::string filename;
 
 	/// <summary>
-	/// Summary for MNL_Home
+	/// Opens the home screen
 	/// </summary>
 	public ref class MNL_Home : public System::Windows::Forms::Form
 	{
+	protected:
+		// Declaration and definition of doubly linked list
+		DoubleLinkedList* bookLinkedList = new DoubleLinkedList();
+
+		// Mouse event variables
+		bool isDragging;
+		Point offset;
+
+		// Declaration and definition of variable to track incrimentation 
+		// of key for use in linked list
+		int keyAccum = 0;
+
+	// Windows Forms generated declarations
+	private: System::Windows::Forms::Button^ sortTitleAscButton;
+	private: System::Windows::Forms::Button^ sortTitleDescButton;
+	private: System::Windows::Forms::Label^ sortTitleLabel;
+	private: System::Windows::Forms::Label^ sortAuthorLabel;
+	private: System::Windows::Forms::Button^ sortAuthorDescButton;
+	private: System::Windows::Forms::Button^ sortAuthorAscButton;
+	private: System::Windows::Forms::Label^ sortSeriesLabel;
+	private: System::Windows::Forms::Button^ sortSeriesDescButton;
+	private: System::Windows::Forms::Button^ sortSeriesAscButton;
+	private: System::Windows::Forms::Label^ sortScoreLabel;
+	private: System::Windows::Forms::Button^ sortScoreDescButton;
+	private: System::Windows::Forms::Button^ sortScoreAscButton;
+	private: System::Windows::Forms::ListBox^ sortListBox;
+	private: System::Windows::Forms::Label^ sortErrorLabel;
+	internal: System::Windows::Forms::ColumnHeader^ keyColumn;
+	private: System::Windows::Forms::Button^ editButton;
+	private: System::Windows::Forms::Label^ nameErrorLabel;
+	private: System::Windows::Forms::Label^ authorErrorLabel;
+	private: System::Windows::Forms::Label^ scoreErrorLabel;
+	private: System::Windows::Forms::Button^ deleteButton;
+
 	public:
 		MNL_Home(std::string username)
 		{
@@ -93,63 +127,37 @@ namespace MyNovelList {
 				in.close();
 			}
 		}
-	private: System::Windows::Forms::Button^ sortTitleAscButton;
-	private: System::Windows::Forms::Button^ sortTitleDescButton;
-	private: System::Windows::Forms::Label^ sortTitleLabel;
-	private: System::Windows::Forms::Label^ sortAuthorLabel;
-	private: System::Windows::Forms::Button^ sortAuthorDescButton;
-	private: System::Windows::Forms::Button^ sortAuthorAscButton;
-	private: System::Windows::Forms::Label^ sortSeriesLabel;
-	private: System::Windows::Forms::Button^ sortSeriesDescButton;
-	private: System::Windows::Forms::Button^ sortSeriesAscButton;
-	private: System::Windows::Forms::Label^ sortScoreLabel;
-	private: System::Windows::Forms::Button^ sortScoreDescButton;
-	private: System::Windows::Forms::Button^ sortScoreAscButton;
-	private: System::Windows::Forms::ListBox^ sortListBox;
-	private: System::Windows::Forms::Label^ sortErrorLabel;
-	internal: System::Windows::Forms::ColumnHeader^ keyColumn;
-	private: System::Windows::Forms::Button^ editButton;
-	private: System::Windows::Forms::Label^ nameErrorLabel;
-	private: System::Windows::Forms::Label^ authorErrorLabel;
-	private: System::Windows::Forms::Label^ scoreErrorLabel;
-	private: System::Windows::Forms::Button^ deleteButton;
-
-	protected:
-		//Declaration and definition of doubly linked list
-		DoubleLinkedList* bookLinkedList = new DoubleLinkedList();
 
 	protected:
 		/// <summary>
-		/// Clean up any resources being used.
+		/// Clean up any Windows Forms resources being used.
 		/// </summary>
 		~MNL_Home()
 		{
+			// If components exist, delete them
 			if (components)
 			{
 				delete components;
 			}
 		}
 
+		// Windows Forms generated declarations
 		private: System::Windows::Forms::TextBox^ nameTextBox;
 		private: System::Windows::Forms::TextBox^ authorTextBox;
 		private: System::Windows::Forms::CheckBox^ seriesCheckBox;
 		private: System::Windows::Forms::Label^ nameLabel;
 		private: System::Windows::Forms::Label^ authorLabel;
 		private: System::Windows::Forms::Label^ partOfSeriesLabel;
-
 		private: System::Windows::Forms::Label^ seriesNameLabel;
 		private: System::Windows::Forms::TextBox^ seriesTextBox;
 		private: System::Windows::Forms::NumericUpDown^ volumeUpDown;
 		private: System::Windows::Forms::Label^ volumeLabel;
-
 		private: System::Windows::Forms::Label^ scoreLabel;
 		private: System::Windows::Forms::Button^ submitButton;
 		private: System::Windows::Forms::Button^ exitButton;
 		private: System::Windows::Forms::ListBox^ scoreListBox;
 		private: System::Windows::Forms::ListView^ libraryDisplayListView;
-
 		private: System::Windows::Forms::ColumnHeader^ titleColumn;
-
 		private: System::Windows::Forms::ColumnHeader^ authorColumn;
 		private: System::Windows::Forms::ColumnHeader^ seriesColumn;
 		private: System::Windows::Forms::ColumnHeader^ volumeColumn;
@@ -760,23 +768,26 @@ namespace MyNovelList {
 
 		}
 #pragma endregion
+
+		// "Checked changed" event for the series checkbox
 		private: System::Void seriesCheckBox_CheckedChanged(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// If the new entry is marked as a series
 			if (seriesCheckBox->Checked)
 			{
+				// Allow editing of the series name and volume count
 				seriesTextBox->Enabled = true;
 				volumeUpDown->Enabled = true;
 			}
 			else
 			{
+				// Disable the options
 				seriesTextBox->Enabled = false;
 				volumeUpDown->Enabled = false;
 			}
 		}
 
 		//"Mouse move" events allows user to move the application by clicking and dragging
-		bool isDragging;
-		Point offset;
 		private: System::Void MNL_Home_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
 		{
 			isDragging = true;
@@ -796,31 +807,36 @@ namespace MyNovelList {
 			isDragging = false;
 		}
 
-		//Global variable to track incrimentation of key for use in linked list
-		int keyAccum = 0;
-
-		//Button "on click" events for adding, editing and deleting entries
+		//Button "on-click" events for adding, editing and deleting entries
 		private: System::Void submitButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Hide error labels for text fields
 			nameErrorLabel->Visible = false;
 			authorErrorLabel->Visible = false;
 			scoreErrorLabel->Visible = false;
 
+			// If the name text box is empty
 			if (nameTextBox->Text == "")
 			{
+				// Show error message
 				nameErrorLabel->Visible = true;
 			}
+			// If the author text box is empty
 			if (authorTextBox->Text == "")
 			{
+				// Show error message
 				authorErrorLabel->Visible = true;
 			}
+			// If the score ListBox hasn't been selected
 			if (scoreListBox->Text == "")
 			{
+				// Show error message
 				scoreErrorLabel->Visible = true;
 			}
+			// If no error messages are showing
 			if (!nameErrorLabel->Visible && !authorErrorLabel->Visible && !scoreErrorLabel->Visible)
 			{
-				//Create node with unique key
+				// Create node with unique key
 				Node* temp = new Node();
 				temp->key = keyAccum;
 				String^ tempKey = temp->key.ToString();
@@ -831,11 +847,12 @@ namespace MyNovelList {
 				b->title = msclr::interop::marshal_as<std::string>(nameTextBox->Text);
 				b->author = msclr::interop::marshal_as<std::string>(authorTextBox->Text);
 
+				// Gets the score from the ListBox and converts it into a string
 				std::string tempScoreString = msclr::interop::marshal_as<std::string>(scoreListBox->Text);
 				int pos = tempScoreString.find(" - ");
 				b->score = tempScoreString.substr(0, pos);
 
-				//Checks if book is a series and fills out info as appropriate
+				// Checks if book is a series and fills out info as appropriate
 				if (seriesCheckBox->Checked)
 				{
 					b->isSeries = true;
@@ -849,11 +866,11 @@ namespace MyNovelList {
 					b->volume = "1";
 				}
 
-				//Adds book to linked list
+				// Adds book to linked list
 				temp->data = b;
 				bookLinkedList->appendNode(temp);
 
-				//Add to ListView
+				// Add to ListView by creating a ListViewItem and filling it out
 				array<String^>^ subItems = gcnew array<String^>(6);
 				subItems[0] = msclr::interop::marshal_as<String^>(b->title);
 				subItems[1] = msclr::interop::marshal_as<String^>(b->author);
@@ -864,7 +881,7 @@ namespace MyNovelList {
 				ListViewItem^ tempLV = gcnew ListViewItem(subItems);
 				libraryDisplayListView->Items->Add(tempLV);
 
-				//Clear and reset inputs
+				// Clear and reset text/list/check boxes
 				nameTextBox->Clear();
 				authorTextBox->Clear();
 				seriesCheckBox->Checked = false;
@@ -872,107 +889,127 @@ namespace MyNovelList {
 				volumeUpDown->Value = 1;
 				scoreListBox->SelectedIndex = 0;
 				scoreListBox->SelectedIndex = -1;
-				//Focus title text box
+				// Focus the user text input on the title text box,
+				// allows easier navigation if the user wants to input 
+				// books in quick succession
 				nameTextBox->Focus();
 			}
 		}
 		private: System::Void editButton_Click(System::Object^ sender, System::EventArgs^ e)
-			   {
-				   nameErrorLabel->Visible = false;
-				   authorErrorLabel->Visible = false;
-				   scoreErrorLabel->Visible = false;
+		{	
+			// Hide error labels for text fields
+			nameErrorLabel->Visible = false;
+			authorErrorLabel->Visible = false;
+			scoreErrorLabel->Visible = false;
 
-				   if (nameTextBox->Text == "")
-				   {
-					   nameErrorLabel->Visible = true;
-				   }
-				   if (authorTextBox->Text == "")
-				   {
-					   authorErrorLabel->Visible = true;
-				   }
-				   if (scoreListBox->Text == "")
-				   {
-					   scoreErrorLabel->Visible = true;
-				   }
-				   if (!nameErrorLabel->Visible && !authorErrorLabel->Visible && !scoreErrorLabel->Visible)
-				   {
-					   //Get key from ListView
-					   std::string listKey = msclr::interop::marshal_as<std::string>(libraryDisplayListView->SelectedItems[0]->SubItems[5]->Text);
-					   int listKeyInt = std::stoi(listKey);
+			// If the name text box is empty
+			if (nameTextBox->Text == "")
+			{
+				// Show error message
+				nameErrorLabel->Visible = true;
+			}
+			// If the author text box is empty
+			if (authorTextBox->Text == "")
+			{
+				// Show error message
+				authorErrorLabel->Visible = true;
+			}
+			// If the score ListBox hasn't been selected
+			if (scoreListBox->Text == "")
+			{
+				// Show error message
+				scoreErrorLabel->Visible = true;
+			}
+			// If no error messages are showing
+			if (!nameErrorLabel->Visible && !authorErrorLabel->Visible && !scoreErrorLabel->Visible)
+			{
+				// Get key from ListView
+				std::string listKey = msclr::interop::marshal_as<std::string>(libraryDisplayListView->SelectedItems[0]->SubItems[5]->Text);
+				int listKeyInt = std::stoi(listKey);
 
-					   Book* b = new Book();
-					   b->title = msclr::interop::marshal_as<std::string>(nameTextBox->Text);
-					   b->author = msclr::interop::marshal_as<std::string>(authorTextBox->Text);
+				// Create temporary Book using data from the text boxes
+				Book* b = new Book();
+				b->title = msclr::interop::marshal_as<std::string>(nameTextBox->Text);
+				b->author = msclr::interop::marshal_as<std::string>(authorTextBox->Text);
 
-					   std::string tempScoreString = msclr::interop::marshal_as<std::string>(scoreListBox->Text);
-					   int pos = tempScoreString.find(" - ");
-					   b->score = tempScoreString.substr(0, pos);
+				// Gets the score from the ListBox and converts it into a string
+				std::string tempScoreString = msclr::interop::marshal_as<std::string>(scoreListBox->Text);
+				int pos = tempScoreString.find(" - ");
+				b->score = tempScoreString.substr(0, pos);
 
-					   //Checks if book is a series and fills out info as appropriate
-					   if (seriesCheckBox->Checked)
-					   {
-						   b->isSeries = true;
-						   b->series = msclr::interop::marshal_as<std::string>(seriesTextBox->Text);
-						   b->volume = msclr::interop::marshal_as<std::string>(volumeUpDown->Text);
-					   }
-					   else
-					   {
-						   b->isSeries = false;
-						   b->series = "";
-						   b->volume = "1";
-					   }
+				// Checks if book is a series and fills out info as appropriate
+				if (seriesCheckBox->Checked)
+				{
+				   b->isSeries = true;
+				   b->series = msclr::interop::marshal_as<std::string>(seriesTextBox->Text);
+				   b->volume = msclr::interop::marshal_as<std::string>(volumeUpDown->Text);
+				}
+				else
+				{
+				   b->isSeries = false;
+				   b->series = "";
+				   b->volume = "1";
+				}
 
-					   //Updates linked list with new data
-					   bookLinkedList->updateNodeByKey(listKeyInt, b);
+				// Updates linked list with new data
+				bookLinkedList->updateNodeByKey(listKeyInt, b);
 
-					   //Clears ListView
-					   libraryDisplayListView->Items->Clear();
+				// Clears ListView
+				libraryDisplayListView->Items->Clear();
 
-					   //Updates ListView with updated linked list
-					   for (int i = 0; i < bookLinkedList->size(); i++)
-					   {
-						   array<String^>^ subItems = gcnew array<String^>(6);
-						   subItems[0] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->title);
-						   subItems[1] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->author);
-						   subItems[2] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->series);
-						   subItems[3] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->volume);
-						   subItems[4] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->score);
+				// Updates ListView with updated linked list by looping through the linked list
+				// and adding all the relevant information to the ListView by creating and 
+				// adding ListViewItems
+				for (int i = 0; i < bookLinkedList->size(); i++)
+				{
+				   array<String^>^ subItems = gcnew array<String^>(6);
+				   subItems[0] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->title);
+				   subItems[1] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->author);
+				   subItems[2] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->series);
+				   subItems[3] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->volume);
+				   subItems[4] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->score);
 
-						   String^ keyString = (*bookLinkedList)[i]->key.ToString();
+				   String^ keyString = (*bookLinkedList)[i]->key.ToString();
 
-						   subItems[5] = keyString;
-						   ListViewItem^ tempLV = gcnew ListViewItem(subItems);
-						   libraryDisplayListView->Items->Add(tempLV);
-					   }
+				   subItems[5] = keyString;
+				   ListViewItem^ tempLV = gcnew ListViewItem(subItems);
+				   libraryDisplayListView->Items->Add(tempLV);
+				}
 
-					   //Clear and reset inputs
-					   nameTextBox->Clear();
-					   authorTextBox->Clear();
-					   seriesCheckBox->Checked = false;
-					   seriesTextBox->Clear();
-					   volumeUpDown->Value = 1;
-					   scoreListBox->SelectedIndex = 0;
-					   scoreListBox->SelectedIndex = -1;
-					   //Focus title text box
-					   nameTextBox->Focus();
-				   }
-			   }
+				// Clear and reset text/list/check boxes
+				nameTextBox->Clear();
+				authorTextBox->Clear();
+				seriesCheckBox->Checked = false;
+				seriesTextBox->Clear();
+				volumeUpDown->Value = 1;
+				scoreListBox->SelectedIndex = 0;
+				scoreListBox->SelectedIndex = -1;
+				// Focus the user text input on the title text box,
+				// allows easier navigation if the user wants to input 
+				// books in quick succession
+				nameTextBox->Focus();
+			}
+		}
 		private: System::Void deleteButton_Click(System::Object^ sender, System::EventArgs^ e)
 		{
-			//Get key from ListView
+			// Get key from ListView
 			std::string listKey = msclr::interop::marshal_as<std::string>(libraryDisplayListView->SelectedItems[0]->SubItems[5]->Text);
 			int listKeyInt = std::stoi(listKey);
 
+			// Remove item from ListView based on key
 			libraryDisplayListView->Items->RemoveAt(libraryDisplayListView->SelectedItems[0]->Index);
 
+			// Delete node based on key
 			bookLinkedList->deleteNodeByKey(listKeyInt);
 		}
 
-		
-		//Sorting button "on click" event handlers
+		// Sorting button "on-click" event handlers
 		private: System::Void sortTitleButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Temporary linked list
 			DoubleLinkedList* sortedList;
+
+			// Switch statement to determine which sorting algorithm to apply
 			switch (sortListBox->SelectedIndex)
 			{
 			case 0:
@@ -998,7 +1035,7 @@ namespace MyNovelList {
 				break;
 			}
 
-			//Add to ListView
+			// Adds sorted list to ListView after clearing current ListView
 			if (sortedList)
 			{
 				libraryDisplayListView->Items->Clear();
@@ -1019,12 +1056,16 @@ namespace MyNovelList {
 					libraryDisplayListView->Items->Add(tempLV);
 				}
 
+				// Sets the bookLinkedList pointer to the new sorted list
 				bookLinkedList = sortedList;
 			}
 		}
 		private: System::Void sortTitleDescButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Temporary linked list
 			DoubleLinkedList* sortedList;
+
+			// Switch statement to determine which sorting algorithm to apply
 			switch (sortListBox->SelectedIndex)
 			{
 			case 0:
@@ -1050,11 +1091,11 @@ namespace MyNovelList {
 				break;
 			}
 
+			// Adds sorted list to ListView after clearing current ListView
 			if (sortedList)
 			{
 				libraryDisplayListView->Items->Clear();
 
-				//Add to ListView
 				for (int i = 0; i < sortedList->size(); i++)
 				{
 					array<String^>^ subItems = gcnew array<String^>(6);
@@ -1071,12 +1112,16 @@ namespace MyNovelList {
 					libraryDisplayListView->Items->Add(tempLV);
 				}
 
+				// Sets the bookLinkedList pointer to the new sorted list
 				bookLinkedList = sortedList;
 			}
 		}
 		private: System::Void sortAuthorAscButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Temporary linked list
 			DoubleLinkedList* sortedList;
+
+			// Switch statement to determine which sorting algorithm to apply
 			switch (sortListBox->SelectedIndex)
 			{
 			case 0:
@@ -1102,11 +1147,11 @@ namespace MyNovelList {
 				break;
 			}
 
+			// Adds sorted list to ListView after clearing current ListView
 			if (sortedList)
 			{
 				libraryDisplayListView->Items->Clear();
 
-				//Add to ListView
 				for (int i = 0; i < sortedList->size(); i++)
 				{
 					array<String^>^ subItems = gcnew array<String^>(6);
@@ -1123,12 +1168,16 @@ namespace MyNovelList {
 					libraryDisplayListView->Items->Add(tempLV);
 				}
 
+				// Sets the bookLinkedList pointer to the new sorted list
 				bookLinkedList = sortedList;
 			}
 		}
 		private: System::Void sortAuthorDescButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Temporary linked list
 			DoubleLinkedList* sortedList;
+
+			// Switch statement to determine which sorting algorithm to apply
 			switch (sortListBox->SelectedIndex)
 			{
 			case 0:
@@ -1154,11 +1203,11 @@ namespace MyNovelList {
 				break;
 			}
 
+			// Adds sorted list to ListView after clearing current ListView
 			if (sortedList)
 			{
 				libraryDisplayListView->Items->Clear();
 
-				//Add to ListView
 				for (int i = 0; i < sortedList->size(); i++)
 				{
 					array<String^>^ subItems = gcnew array<String^>(6);
@@ -1175,12 +1224,16 @@ namespace MyNovelList {
 					libraryDisplayListView->Items->Add(tempLV);
 				}
 
+				// Sets the bookLinkedList pointer to the new sorted list
 				bookLinkedList = sortedList;
 			}
 		}
 		private: System::Void sortSeriesAscButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Temporary linked list
 			DoubleLinkedList* sortedList;
+
+			// Switch statement to determine which sorting algorithm to apply
 			switch (sortListBox->SelectedIndex)
 			{
 			case 0:
@@ -1206,11 +1259,11 @@ namespace MyNovelList {
 				break;
 			}
 
+			// Adds sorted list to ListView after clearing current ListView
 			if (sortedList)
 			{
 				libraryDisplayListView->Items->Clear();
 
-				//Add to ListView
 				for (int i = 0; i < sortedList->size(); i++)
 				{
 					array<String^>^ subItems = gcnew array<String^>(6);
@@ -1227,12 +1280,16 @@ namespace MyNovelList {
 					libraryDisplayListView->Items->Add(tempLV);
 				}
 
+				// Sets the bookLinkedList pointer to the new sorted list
 				bookLinkedList = sortedList;
 			}
 		}
 		private: System::Void sortSeriesDescButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Temporary linked list
 			DoubleLinkedList* sortedList;
+
+			// Switch statement to determine which sorting algorithm to apply
 			switch (sortListBox->SelectedIndex)
 			{
 			case 0:
@@ -1258,11 +1315,11 @@ namespace MyNovelList {
 				break;
 			}
 
+			// Adds sorted list to ListView after clearing current ListView
 			if (sortedList)
 			{
 				libraryDisplayListView->Items->Clear();
 
-				//Add to ListView
 				for (int i = 0; i < sortedList->size(); i++)
 				{
 					array<String^>^ subItems = gcnew array<String^>(6);
@@ -1279,12 +1336,16 @@ namespace MyNovelList {
 					libraryDisplayListView->Items->Add(tempLV);
 				}
 
+				// Sets the bookLinkedList pointer to the new sorted list
 				bookLinkedList = sortedList;
 			}
 		}
 		private: System::Void sortScoreAscButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Temporary linked list
 			DoubleLinkedList* sortedList;
+
+			// Switch statement to determine which sorting algorithm to apply
 			switch (sortListBox->SelectedIndex)
 			{
 			case 0:
@@ -1310,11 +1371,11 @@ namespace MyNovelList {
 				break;
 			}
 
+			// Adds sorted list to ListView after clearing current ListView
 			if (sortedList)
 			{
 				libraryDisplayListView->Items->Clear();
 
-				//Add to ListView
 				for (int i = 0; i < sortedList->size(); i++)
 				{
 					array<String^>^ subItems = gcnew array<String^>(6);
@@ -1331,12 +1392,16 @@ namespace MyNovelList {
 					libraryDisplayListView->Items->Add(tempLV);
 				}
 
+				// Sets the bookLinkedList pointer to the new sorted list
 				bookLinkedList = sortedList;
 			}
 		}
 		private: System::Void sortScoreDescButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Temporary linked list
 			DoubleLinkedList* sortedList;
+
+			// Switch statement to determine which sorting algorithm to apply
 			switch (sortListBox->SelectedIndex)
 			{
 			case 0:
@@ -1362,11 +1427,11 @@ namespace MyNovelList {
 				break;
 			}
 
+			// Adds sorted list to ListView after clearing current ListView
 			if (sortedList)
 			{
 				libraryDisplayListView->Items->Clear();
 
-				//Add to ListView
 				for (int i = 0; i < sortedList->size(); i++)
 				{
 					array<String^>^ subItems = gcnew array<String^>(6);
@@ -1383,54 +1448,68 @@ namespace MyNovelList {
 					libraryDisplayListView->Items->Add(tempLV);
 				}
 
+				// Sets the bookLinkedList pointer to the new sorted list
 				bookLinkedList = sortedList;
 			}
 		}
 
-		//Exits application
+		// Exit button "on-click" event handler 
 		private: System::Void exitButton_Click(System::Object^ sender, System::EventArgs^ e)
-			   {
-				   std::ofstream outFile;
-				   outFile.open(filename, std::ofstream::out | std::fstream::trunc);
-				   outFile << keyAccum << "\n";
-				   for (int i = 0; i < bookLinkedList->size(); i++)
-				   {
-					   String^ outTitle = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->title);
-					   String^ outAuthor = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->author);
-					   String^ outSeries;
-					   if (msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->series) == "")
-					   {
-						   outSeries = "@";
-					   }
-					   else
-					   {
-						   outSeries = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->series);
-					   }
-					   String^ outVolume = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->volume);
-					   String^ outScore = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->score);
+		{
+			// Open out filestream to save user book data
+			std::ofstream outFile;
+			outFile.open(filename, std::ofstream::out | std::fstream::trunc);
+			outFile << keyAccum << "\n";
 
-					   String^ keyString = (*bookLinkedList)[i]->key.ToString();
-					   String^ outKey = keyString;
+			// For each node in the linked list
+			for (int i = 0; i < bookLinkedList->size(); i++)
+			{
+				// Save information to a C# string
+				String^ outTitle = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->title);
+				String^ outAuthor = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->author);
+				String^ outSeries;
+				// If the series field is blank then add a @ as a placeholder, 
+				// otherwise add the data
+				if (msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->series) == "")
+				{
+				   outSeries = "@";
+				}
+				else
+				{
+				   outSeries = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->series);
+				}
+				String^ outVolume = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->volume);
+				String^ outScore = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->score);
 
-					   std::string outStdTitle = msclr::interop::marshal_as<std::string>(outTitle);
-					   std::string outStdAuthor = msclr::interop::marshal_as<std::string>(outAuthor);
-					   std::string outStdSeries = msclr::interop::marshal_as<std::string>(outSeries);
-					   std::string outStdVolume = msclr::interop::marshal_as<std::string>(outVolume);
-					   std::string outStdScore = msclr::interop::marshal_as<std::string>(outScore);
-					   std::string outStdKey = msclr::interop::marshal_as<std::string>(outKey);
+				String^ keyString = (*bookLinkedList)[i]->key.ToString();
+				String^ outKey = keyString;
 
-					   outFile << outStdTitle << "\t"
-						   << outStdAuthor << "\t"
-						   << outStdSeries << "\t"
-						   << outStdVolume << "\t"
-						   << outStdScore << "\t"
-						   << outStdKey
-						   << std::endl;
-				   }
-				   outFile.close();
+				// Convert the C# strings to C++ strings
+				std::string outStdTitle = msclr::interop::marshal_as<std::string>(outTitle);
+				std::string outStdAuthor = msclr::interop::marshal_as<std::string>(outAuthor);
+				std::string outStdSeries = msclr::interop::marshal_as<std::string>(outSeries);
+				std::string outStdVolume = msclr::interop::marshal_as<std::string>(outVolume);
+				std::string outStdScore = msclr::interop::marshal_as<std::string>(outScore);
+				std::string outStdKey = msclr::interop::marshal_as<std::string>(outKey);
 
-				   Application::Restart();
-				   Environment::Exit(0);
-			   }
+				// Output the C++ strings to the file
+				outFile << outStdTitle << "\t"
+				   << outStdAuthor << "\t"
+				   << outStdSeries << "\t"
+				   << outStdVolume << "\t"
+				   << outStdScore << "\t"
+				   << outStdKey
+				   << std::endl;
+			}
+
+			// Close the file
+			outFile.close();
+
+			// Restart the application to allow the user to log in again if they wish
+			Application::Restart();
+			// In order to avoid a fatal crash when calling Restart(), 
+			// the current environment must exit with code 0
+			Environment::Exit(0);
+		}
 	};
 }

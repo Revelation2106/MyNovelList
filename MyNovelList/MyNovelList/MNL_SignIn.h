@@ -7,6 +7,7 @@
 
 namespace MyNovelList {
 
+	// Allow use of C#-related code within C++
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
@@ -14,38 +15,26 @@ namespace MyNovelList {
 	using namespace System::Data;
 	using namespace System::Drawing;
 
-	//Global username and password vector lists
+	// Global username and password vector lists
 	std::vector<std::string> usernameVector;
 	std::vector<std::string> passwordVector;
 
+	// Global string to store the username of the successfully logged in user
 	std::string successfulUsername = "";
 
-	//Serialisation constants
-	/*const char* FORMAT_OUT = "%s %s\n";
-	const char* FORMAT_IN = "(%[^,], %s)\n";*/
-
 	/// <summary>
-	/// Summary for MNL_SignIn
+	/// Opens a sign-in window. 
 	/// </summary>
 	public ref class MNL_SignIn : public System::Windows::Forms::Form
 	{
 	protected:
+		// Bool to track whether a login attempt was successful
 		bool loginSuccessful;
 
-	protected:
-
-
-
+	// Windows Forms generated declarations
 	private: System::Windows::Forms::Label^ copyLabel;
 	private: System::Windows::Forms::Label^ mnlLabel;
 	private: System::Windows::Forms::Label^ incorrectDetailsLabel;
-
-
-
-
-
-
-
 	private: System::Windows::Forms::Label^ createAccountLabel;
 	private: System::Windows::Forms::Label^ accountLabel;
 	private: System::Windows::Forms::Panel^ registerPanel;
@@ -61,38 +50,34 @@ namespace MyNovelList {
 	private: System::Windows::Forms::Label^ registerNoTextLabel;
 	private: System::Windows::Forms::Label^ registerLabel;
 
-
-
-
-
-	private:
-
 	public:
+		// Default constructor.
 		MNL_SignIn(void)
 		{
+			// Initialiser for Windows Forms components
 			InitializeComponent();
 
+			// Hides the user agreement panel
 			uaPanel->Hide();
+			// Hides the registration panel
 			registerPanel->Hide();
-
-			//
-			//TODO: Add the constructor code here
-			//
 		}
 
 	protected:
 		/// <summary>
-		/// Clean up any resources being used.
+		/// Clean up any Windows Forms resources being used.
 		/// </summary>
 		~MNL_SignIn()
 		{
+			// If components exist, delete them
 			if (components)
 			{
 				delete components;
 			}
 		}
+
+	// Windows Forms generated declarations
 	private: System::Windows::Forms::Label^ signInLabel;
-	protected:
 	private: System::Windows::Forms::Label^ usernameLabel;
 	private: System::Windows::Forms::TextBox^ usernameTextBox;
 	private: System::Windows::Forms::TextBox^ passwordTextBox;
@@ -545,98 +530,133 @@ namespace MyNovelList {
 			this->uaPanel->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
-
 		}
 #pragma endregion
+
+		// "On-click" event for the sign-in button
 		private: System::Void signInButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Temporary strings
 			std::string userTemp, passTemp;
+			// In filestream to the designated filepath
 			std::ifstream in("UP.dat");
 
+			// While the file is open
 			while (in)
 			{
+				// If the filestream can get a line, set userTemp and passTemp to the associated text
 				if (in >> userTemp >> passTemp)
 				{
+					// Add the temporary variables to their vector lists
 					usernameVector.emplace_back(userTemp);
 					passwordVector.emplace_back(passTemp);
 
+					// If the text in the username and password text boxes match the temporary variables
 					if (msclr::interop::marshal_as<std::string>(usernameTextBox->Text) == userTemp &&
 						msclr::interop::marshal_as<std::string>(passwordTextBox->Text) == passTemp)
 					{
+						// Allow login by setting the bool to true
 						loginSuccessful = true;
+						// Note the name of the successful user
 						successfulUsername = msclr::interop::marshal_as<std::string>(usernameTextBox->Text);
 						break;
 					}
 				}
 			}
 
+			// Close the file
 			in.close();
 
-			//If raw data is correct for both fields then allow access
+			// If raw data is correct for both fields then allow access
 			if (loginSuccessful)
 			{
 				incorrectDetailsLabel->Visible = false;
+				// Hide the current window
 				this->Hide();
+				// Create an instance of the home screen
 				MNL_Home^ home = gcnew MNL_Home(successfulUsername);
+				// Display it as a dialogue box (must be done as only one Windows Form program can be active
+				// at one time and closing the current window would shut down the program)
 				home->ShowDialog();
+				// Close the current window after the new window is opened
 				this->Close();
 			}
 			else
 			{
-				//Error: incorrect username or password
+				// Display error message if the username or password is wrong
 				incorrectDetailsLabel->Visible = true;
 				loginSuccessful = false;
 			}
 		}
+
+		// "On-click" event for the exit button
 		private: System::Void exitButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
 			Application::Exit();
 		}
+
+		// "Check changed" event for the user agreement checkbox
 		private: System::Void uaCheckBox_CheckedChanged(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// If the user has agreed to the user agreement
 			if (uaCheckBox->Checked)
 			{
+				// Enable the sign-in button
 				signInButton->Enabled = true;
 			}
 			else
 			{
+				// Disable the button
 				signInButton->Enabled = false;
 			}
 		}
+
+		// "On-click" event for the user agreement panel's ok button
 		private: System::Void uaButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Hide the user agreement panel
 			uaPanel->SendToBack();
 			uaPanel->Hide();
 		}
+
+		// "On-click" event for the user agreement label
 		private: System::Void uaLabel_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Displays the user agreement panel
 			uaPanel->BringToFront();
 			uaPanel->Show();
+
 			incorrectDetailsLabel->Visible = false;
 		}
 
-		//Allows user to drag around the application window
+		// Mouse event variables
 		bool isDragging;
 		Point offset;
+		// Allows user to drag around the application window through various mouse events
 		private: System::Void MNL_SignIn_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
 		{
+			// Enable dragging and set the offset to the mouse's position
 			isDragging = true;
 			offset.X = e->X;
 			offset.Y = e->Y;
 		}
 		private: System::Void MNL_SignIn_MouseMove(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
 		{
+			// If the user is dragging their mouse
 			if (isDragging)
 			{
+				// Move the screen to that point minus the mouse offset
 				Point currentScreenPos = PointToScreen(Point(e->X, e->Y));
 				Location = Point(currentScreenPos.X - offset.X, currentScreenPos.Y - offset.Y);
 			}
 		}
 		private: System::Void MNL_SignIn_MouseUp(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
 		{
+			// Set dragging to false
 			isDragging = false;
 		}
 
+		// "On-click" event for the register user button
 		private: System::Void registerButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
 			//If username and password fields have data then write it to a .dat file
@@ -645,25 +665,35 @@ namespace MyNovelList {
 				registerNoTextLabel->Visible = false;
 
 				std::ofstream outFile;
+				// Open an out filestream
 				outFile.open("UP.dat", std::fstream::app);
+				// Write the contents of the username and password box to the file
 				outFile << msclr::interop::marshal_as<std::string>(registerUserTextBox->Text) << " " << msclr::interop::marshal_as<std::string>(registerPassTextBox->Text) << std::endl;
+				// Close the file
 				outFile.close();
 
+				// Clear the text boxes
 				registerUserTextBox->Clear();
 				registerPassTextBox->Clear();
 
+				// Hide the registration panel
 				registerPanel->Hide();
 				registerPanel->SendToBack();
 			}
 			else
 			{
+				// Display an error if one of the text fields is empty
 				registerNoTextLabel->Visible = true;
 			}
 		}
+
+		// "On-click" event for the create account label
 		private: System::Void createAccountLabel_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Shows the registration panel
 			registerPanel->BringToFront();
 			registerPanel->Show();
+
 			incorrectDetailsLabel->Visible = false;
 		}
 	};

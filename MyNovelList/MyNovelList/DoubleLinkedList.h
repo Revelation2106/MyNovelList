@@ -5,6 +5,10 @@
 
 namespace MyNovelList {
 
+	/// <summary>
+	/// Stores the title, author, series, volume and score.
+	/// Has the bool isSeries - which decides if the series and volume parameters should be filled.
+	/// </summary>
 	struct Book
 	{
 		std::string title;
@@ -15,6 +19,7 @@ namespace MyNovelList {
 		std::string score;
 	};
 
+	// Node class used in the doubly linked list.
 	class Node 
 	{
 	public:
@@ -24,7 +29,14 @@ namespace MyNovelList {
 		Node* previous;
 
 	public:
-		Node() = default;
+		// Default constructor.
+		Node() = default;		
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="k - key integer"></param>
+		/// <param name="d - book struct"></param>
 		Node(int k, Book* d)
 		{
 			key = k;
@@ -35,37 +47,101 @@ namespace MyNovelList {
 	class DoubleLinkedList
 	{
 	public:
+		// Reference to head of the list.
 		Node* head;
 
 	private:
+		// Count is used in serialisation for tracking the true key value.
 		int count = 0;
 
 	public:
+		// Default constructor.
 		DoubleLinkedList()
 		{
 			head = NULL;
 		}
+		/// <summary>
+		/// Constructor. Takes a node which will be set as the head. 
+		/// </summary>
+		/// <param name="n - head node"></param>
 		DoubleLinkedList(Node* n)
 		{
 			head = n;
 		}
 
+		/// <summary>
+		/// Checks if a node exists by searching through the list 
+		/// based on the key passed to the function.
+		/// </summary>
+		/// <param name="k - key to search by"></param>
+		/// <returns>Node pointer if it exists, otherwise nullptr</returns>
 		Node* checkNodeExists(int k);
 
+		/// <summary>
+		/// Adds a node to the end of the list.
+		/// </summary>
+		/// <param name="n - node to insert"></param>
 		void appendNode(Node* n);
+		/// <summary>
+		/// Adds a node to the start of the list.
+		/// </summary>
+		/// <param name="n - node to insert"></param>
 		void prependNode(Node* n);
+
+		/// <summary>
+		/// Adds a node to the list after a given node.
+		/// </summary>
+		/// <param name="k - key of node to insert after"></param>
+		/// <param name="n - node to be inserted"></param>
 		void insertNodeAfter(int k, Node* n);
 
+		/// <summary>
+		/// Deletes a node from the list.
+		/// </summary>
+		/// <param name="k - key of node to be deleted"></param>
 		void deleteNodeByKey(int k);
 
+		/// <summary>
+		/// Updates a node in the list.
+		/// </summary>
+		/// <param name="k - key of node to be updated"></param>
+		/// <param name="d - book data to replace the current data"></param>
 		void updateNodeByKey(int k, Book* d);
 
+		/// <summary>
+		/// Operater overload for the [] operation. 
+		/// Allows iteration through the list in loops.
+		/// </summary>
+		/// <param name="Index integer"></param>
+		/// <returns>Node pointer at the index</returns>
 		Node* operator[](int index);
 
+		/// <summary>
+		/// Returns the size of the list.
+		/// </summary>
+		/// <returns>Count</returns>
 		int size() { return count; }
 
-		int DoubleLinkedList::areTheyNeighbours(Node* A, Node* B);
-		void DoubleLinkedList::refreshOuterPointers(Node* A);
+		/// <summary>
+		/// Checks if two nodes are next to each other in the list.
+		/// </summary>
+		/// <param name="A - first node"></param>
+		/// <param name="B - second node"></param>
+		/// <returns>Returns 1 if nodes are neighbours</returns>
+		int areTheyNeighbours(Node* A, Node* B);
+
+		/// <summary>
+		/// Refreshes ->next and ->previous node connections.
+		/// Used in the swap function
+		/// </summary>
+		/// <param name="A - node"></param>
+		void refreshOuterPointers(Node* A);
+
+		/// <summary>
+		/// Swaps two specified nodes in the list.
+		/// </summary>
+		/// <param name="A - first node"></param>
+		/// <param name="B - second node"></param>
 		void swap(Node* A, Node* B);
 	};
 
