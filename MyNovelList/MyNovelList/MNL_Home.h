@@ -1025,6 +1025,8 @@ namespace MyNovelList {
 				sortedList = Sort::InsertionTitle(bookLinkedList);
 				break;
 			case 3:
+				sortErrorLabel->Visible = false;
+				sortedList = Sort::ShellTitle(bookLinkedList);
 				break;
 			case 4:
 				break;
@@ -1081,6 +1083,8 @@ namespace MyNovelList {
 				sortedList = Sort::InsertionTitle(bookLinkedList, true);
 				break;
 			case 3:
+				sortErrorLabel->Visible = false;
+				sortedList = Sort::ShellTitle(bookLinkedList, true);
 				break;
 			case 4:
 				break;
@@ -1137,6 +1141,8 @@ namespace MyNovelList {
 				sortedList = Sort::InsertionAuthor(bookLinkedList);
 				break;
 			case 3:
+				sortErrorLabel->Visible = false;
+				sortedList = Sort::ShellAuthor(bookLinkedList);
 				break;
 			case 4:
 				break;
@@ -1193,6 +1199,8 @@ namespace MyNovelList {
 				sortedList = Sort::InsertionAuthor(bookLinkedList, true);
 				break;
 			case 3:
+				sortErrorLabel->Visible = false;
+				sortedList = Sort::ShellAuthor(bookLinkedList, true);
 				break;
 			case 4:
 				break;
@@ -1249,6 +1257,8 @@ namespace MyNovelList {
 				sortedList = Sort::InsertionSeries(bookLinkedList);
 				break;
 			case 3:
+				sortErrorLabel->Visible = false;
+				sortedList = Sort::ShellSeries(bookLinkedList);
 				break;
 			case 4:
 				break;
@@ -1305,6 +1315,8 @@ namespace MyNovelList {
 				sortedList = Sort::InsertionSeries(bookLinkedList, true);
 				break;
 			case 3:
+				sortErrorLabel->Visible = false;
+				sortedList = Sort::ShellSeries(bookLinkedList, true);
 				break;
 			case 4:
 				break;
@@ -1361,6 +1373,8 @@ namespace MyNovelList {
 				sortedList = Sort::InsertionScore(bookLinkedList);
 				break;
 			case 3:
+				sortErrorLabel->Visible = false;
+				sortedList = Sort::ShellScore(bookLinkedList);
 				break;
 			case 4:
 				break;
@@ -1417,6 +1431,8 @@ namespace MyNovelList {
 				sortedList = Sort::InsertionScore(bookLinkedList, true);
 				break;
 			case 3:
+				sortErrorLabel->Visible = false;
+				sortedList = Sort::ShellScore(bookLinkedList, true);
 				break;
 			case 4:
 				break;

@@ -4,4 +4,3 @@ C:\Users\Thomas\Desktop\Uni Temp\CODE\MyNovelList\Debug\MyNovelList.vcxproj.Gene
 C:\Users\Thomas\Desktop\Uni Temp\MyNovelList\MyNovelList\MyNovelList\Debug\MyNovelList.MNL_Home.resources
 C:\Users\Thomas\Desktop\Uni Temp\MyNovelList\MyNovelList\MyNovelList\Debug\MyNovelList.MNL_SignIn.resources
 C:\Users\Thomas\Desktop\Uni Temp\MyNovelList\MyNovelList\MyNovelList\Debug\MyNovelList.vcxproj.GenerateResource.cache
-C:\Users\Thomas\Desktop\Uni Temp\MyNovelList\MyNovelList\MyNovelList\Debug\MyNovelList.vcxprojAssemblyReference.cache

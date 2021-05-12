@@ -579,4 +579,219 @@ namespace MyNovelList {
         return list;
     }
 
+    //Shell sorts
+    //---------------
+    DoubleLinkedList* Sort::ShellTitle(DoubleLinkedList* list, bool isBack)
+    {
+        // If sorting in descending order
+        if (isBack)
+        {
+            // Loop through the size of the list divided by 2 in intervals of 2
+            for (int gap = list->size() / 2; gap > 0; gap /= 2)
+            {
+                // Loop while j - gap is les than the number of nodes in the list
+                for (int j = gap; j < list->size(); j++)
+                {
+                    // Temporary node
+                    auto temp = (*list)[j];
+                    // Temporary index
+                    int i = 0;
+
+                    // Loop while i < j and if the title at index i-gap is 
+                    // alphabeticaly lower than the title at index temp
+                    for (i = j; (i >= gap) && ((*list)[i - gap]->data->title < temp->data->title); i -= gap)
+                    {
+                        // Swap the nodes at index i-gap and i
+                        list->swap((*list)[i - gap], (*list)[i]);
+                    }
+
+                    // Swap the nodes at index i and temp
+                    list->swap((*list)[i], temp);
+                }
+            }
+        }
+        else
+        {
+            // Same thing except the third for loop checks if 
+            // the title is alphabetically higher
+            for (int gap = list->size() / 2; gap > 0; gap /= 2)
+            {
+                for (int j = gap; j < list->size(); j++)
+                {
+                    auto temp = (*list)[j];
+                    int i = 0;
+
+                    for (i = j; (i >= gap) && ((*list)[i - gap]->data->title > temp->data->title); i -= gap)
+                    {
+                        list->swap((*list)[i - gap], (*list)[i]);
+                    }
+
+                    list->swap((*list)[i], temp);
+                }
+            }
+        }
+
+        // Return sorted list
+        return list;
+    }
+    DoubleLinkedList* Sort::ShellAuthor(DoubleLinkedList* list, bool isBack)
+    {
+        // If sorting in descending order
+        if (isBack)
+        {
+            // Loop through the size of the list divided by 2 in intervals of 2
+            for (int gap = list->size() / 2; gap > 0; gap /= 2)
+            {
+                // Loop while j - gap is les than the number of nodes in the list
+                for (int j = gap; j < list->size(); j++)
+                {
+                    // Temporary node
+                    auto temp = (*list)[j];
+                    // Temporary index
+                    int i = 0;
+
+                    // Loop while i < j and if the author at index i-gap is 
+                    // alphabeticaly lower than the author at index temp
+                    for (i = j; (i >= gap) && ((*list)[i - gap]->data->author < temp->data->author); i -= gap)
+                    {
+                        // Swap the nodes at index i-gap and i
+                        list->swap((*list)[i - gap], (*list)[i]);
+                    }
+
+                    // Swap the nodes at index i and temp
+                    list->swap((*list)[i], temp);
+                }
+            }
+        }
+        else
+        {
+            // Same thing except the third for loop checks if 
+            // the author is alphabetically higher
+            for (int gap = list->size() / 2; gap > 0; gap /= 2)
+            {
+                for (int j = gap; j < list->size(); j++)
+                {
+                    auto temp = (*list)[j];
+                    int i = 0;
+
+                    for (i = j; (i >= gap) && ((*list)[i - gap]->data->author > temp->data->author); i -= gap)
+                    {
+                        list->swap((*list)[i - gap], (*list)[i]);
+                    }
+
+                    list->swap((*list)[i], temp);
+                }
+            }
+        }
+
+        // Return sorted list
+        return list;
+    }
+    DoubleLinkedList* Sort::ShellSeries(DoubleLinkedList* list, bool isBack)
+    {
+        // If sorting in descending order
+        if (isBack)
+        {
+            // Loop through the size of the list divided by 2 in intervals of 2
+            for (int gap = list->size() / 2; gap > 0; gap /= 2)
+            {
+                // Loop while j - gap is les than the number of nodes in the list
+                for (int j = gap; j < list->size(); j++)
+                {
+                    // Temporary node
+                    auto temp = (*list)[j];
+                    // Temporary index
+                    int i = 0;
+
+                    // Loop while i < j and if the series at index i-gap is 
+                    // alphabeticaly lower than the series at index temp
+                    for (i = j; (i >= gap) && ((*list)[i - gap]->data->series < temp->data->series); i -= gap)
+                    {
+                        // Swap the nodes at index i-gap and i
+                        list->swap((*list)[i - gap], (*list)[i]);
+                    }
+
+                    // Swap the nodes at index i and temp
+                    list->swap((*list)[i], temp);
+                }
+            }
+        }
+        else
+        {
+            // Same thing except the third for loop checks if 
+            // the series is alphabetically higher
+            for (int gap = list->size() / 2; gap > 0; gap /= 2)
+            {
+                for (int j = gap; j < list->size(); j++)
+                {
+                    auto temp = (*list)[j];
+                    int i = 0;
+
+                    for (i = j; (i >= gap) && ((*list)[i - gap]->data->series > temp->data->series); i -= gap)
+                    {
+                        list->swap((*list)[i - gap], (*list)[i]);
+                    }
+
+                    list->swap((*list)[i], temp);
+                }
+            }
+        }
+
+        // Return sorted list
+        return list;
+    }
+    DoubleLinkedList* Sort::ShellScore(DoubleLinkedList* list, bool isBack)
+    {
+        // If sorting in descending order
+        if (isBack)
+        {
+            // Loop through the size of the list divided by 2 in intervals of 2
+            for (int gap = list->size() / 2; gap > 0; gap /= 2)
+            {
+                // Loop while j - gap is les than the number of nodes in the list
+                for (int j = gap; j < list->size(); j++)
+                {
+                    // Temporary node
+                    auto temp = (*list)[j];
+                    // Temporary index
+                    int i = 0;
+
+                    // Loop while i < j and if the score at index i-gap is 
+                    // numerically lower than the score at index temp
+                    for (i = j; (i >= gap) && ((*list)[i - gap]->data->score < temp->data->score); i -= gap)
+                    {
+                        // Swap the nodes at index i-gap and i
+                        list->swap((*list)[i - gap], (*list)[i]);
+                    }
+
+                    // Swap the nodes at index i and temp
+                    list->swap((*list)[i], temp);
+                }
+            }
+        }
+        else
+        {
+            // Same thing except the third for loop checks if 
+            // the score is numerically higher
+            for (int gap = list->size() / 2; gap > 0; gap /= 2)
+            {
+                for (int j = gap; j < list->size(); j++)
+                {
+                    auto temp = (*list)[j];
+                    int i = 0;
+
+                    for (i = j; (i >= gap) && ((*list)[i - gap]->data->score > temp->data->score); i -= gap)
+                    {
+                        list->swap((*list)[i - gap], (*list)[i]);
+                    }
+
+                    list->swap((*list)[i], temp);
+                }
+            }
+        }
+
+        // Return sorted list
+        return list;
+    }
+
 }
