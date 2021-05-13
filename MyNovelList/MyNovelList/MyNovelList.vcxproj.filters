@@ -39,9 +39,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="UP.dat">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
 </Project>

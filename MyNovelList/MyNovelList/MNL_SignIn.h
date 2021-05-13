@@ -15,9 +15,8 @@ namespace MyNovelList {
 	using namespace System::Data;
 	using namespace System::Drawing;
 
-	// Global username and password vector lists
+	// Global username vector list used when registering new users
 	std::vector<std::string> usernameVector;
-	std::vector<std::string> passwordVector;
 
 	// Global string to store the username of the successfully logged in user
 	std::string successfulUsername = "";
@@ -30,6 +29,10 @@ namespace MyNovelList {
 	protected:
 		// Bool to track whether a login attempt was successful
 		bool loginSuccessful;
+
+		// Mouse event variables
+		bool isDragging;
+		Point offset;
 
 	// Windows Forms generated declarations
 	private: System::Windows::Forms::Label^ copyLabel;
@@ -48,6 +51,8 @@ namespace MyNovelList {
 	private: System::Windows::Forms::Button^ uaButton;
 	private: System::Windows::Forms::Label^ uaLabelHeading;
 	private: System::Windows::Forms::Label^ registerNoTextLabel;
+	private: System::Windows::Forms::Label^ registerSameUsernameLabel;
+	private: System::Windows::Forms::Button^ registerCancelButton;
 	private: System::Windows::Forms::Label^ registerLabel;
 
 	public:
@@ -116,6 +121,9 @@ namespace MyNovelList {
 			this->createAccountLabel = (gcnew System::Windows::Forms::Label());
 			this->accountLabel = (gcnew System::Windows::Forms::Label());
 			this->registerPanel = (gcnew System::Windows::Forms::Panel());
+			this->registerCancelButton = (gcnew System::Windows::Forms::Button());
+			this->registerSameUsernameLabel = (gcnew System::Windows::Forms::Label());
+			this->registerNoTextLabel = (gcnew System::Windows::Forms::Label());
 			this->registerPassTextBox = (gcnew System::Windows::Forms::TextBox());
 			this->registerPassLabel = (gcnew System::Windows::Forms::Label());
 			this->registerUserTextBox = (gcnew System::Windows::Forms::TextBox());
@@ -126,7 +134,6 @@ namespace MyNovelList {
 			this->uaTextBox = (gcnew System::Windows::Forms::TextBox());
 			this->uaButton = (gcnew System::Windows::Forms::Button());
 			this->uaLabelHeading = (gcnew System::Windows::Forms::Label());
-			this->registerNoTextLabel = (gcnew System::Windows::Forms::Label());
 			this->registerPanel->SuspendLayout();
 			this->uaPanel->SuspendLayout();
 			this->SuspendLayout();
@@ -334,6 +341,8 @@ namespace MyNovelList {
 			this->registerPanel->BackColor = System::Drawing::SystemColors::Control;
 			this->registerPanel->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"registerPanel.BackgroundImage")));
 			this->registerPanel->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+			this->registerPanel->Controls->Add(this->registerCancelButton);
+			this->registerPanel->Controls->Add(this->registerSameUsernameLabel);
 			this->registerPanel->Controls->Add(this->registerNoTextLabel);
 			this->registerPanel->Controls->Add(this->registerPassTextBox);
 			this->registerPanel->Controls->Add(this->registerPassLabel);
@@ -345,6 +354,51 @@ namespace MyNovelList {
 			this->registerPanel->Name = L"registerPanel";
 			this->registerPanel->Size = System::Drawing::Size(1920, 1080);
 			this->registerPanel->TabIndex = 17;
+			// 
+			// registerCancelButton
+			// 
+			this->registerCancelButton->BackColor = System::Drawing::Color::Transparent;
+			this->registerCancelButton->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->registerCancelButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->registerCancelButton->ForeColor = System::Drawing::Color::Wheat;
+			this->registerCancelButton->Location = System::Drawing::Point(476, 762);
+			this->registerCancelButton->Name = L"registerCancelButton";
+			this->registerCancelButton->Size = System::Drawing::Size(230, 90);
+			this->registerCancelButton->TabIndex = 21;
+			this->registerCancelButton->Text = L"Cancel";
+			this->registerCancelButton->UseVisualStyleBackColor = false;
+			this->registerCancelButton->Click += gcnew System::EventHandler(this, &MNL_SignIn::registerCancelButton_Click);
+			// 
+			// registerSameUsernameLabel
+			// 
+			this->registerSameUsernameLabel->AutoSize = true;
+			this->registerSameUsernameLabel->BackColor = System::Drawing::Color::Transparent;
+			this->registerSameUsernameLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.125F, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->registerSameUsernameLabel->ForeColor = System::Drawing::Color::Red;
+			this->registerSameUsernameLabel->Location = System::Drawing::Point(711, 458);
+			this->registerSameUsernameLabel->Name = L"registerSameUsernameLabel";
+			this->registerSameUsernameLabel->Size = System::Drawing::Size(320, 31);
+			this->registerSameUsernameLabel->TabIndex = 20;
+			this->registerSameUsernameLabel->Text = L"Username already exists!";
+			this->registerSameUsernameLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->registerSameUsernameLabel->Visible = false;
+			// 
+			// registerNoTextLabel
+			// 
+			this->registerNoTextLabel->AutoSize = true;
+			this->registerNoTextLabel->BackColor = System::Drawing::Color::Transparent;
+			this->registerNoTextLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.125F, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->registerNoTextLabel->ForeColor = System::Drawing::Color::Red;
+			this->registerNoTextLabel->Location = System::Drawing::Point(199, 871);
+			this->registerNoTextLabel->Name = L"registerNoTextLabel";
+			this->registerNoTextLabel->Size = System::Drawing::Size(507, 31);
+			this->registerNoTextLabel->TabIndex = 19;
+			this->registerNoTextLabel->Text = L"Please enter a Username and Password!";
+			this->registerNoTextLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->registerNoTextLabel->Visible = false;
 			// 
 			// registerPassTextBox
 			// 
@@ -478,21 +532,6 @@ namespace MyNovelList {
 			this->uaLabelHeading->Text = L"User Agreement";
 			this->uaLabelHeading->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			// 
-			// registerNoTextLabel
-			// 
-			this->registerNoTextLabel->AutoSize = true;
-			this->registerNoTextLabel->BackColor = System::Drawing::Color::Transparent;
-			this->registerNoTextLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.125F, System::Drawing::FontStyle::Regular,
-				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->registerNoTextLabel->ForeColor = System::Drawing::Color::Red;
-			this->registerNoTextLabel->Location = System::Drawing::Point(199, 871);
-			this->registerNoTextLabel->Name = L"registerNoTextLabel";
-			this->registerNoTextLabel->Size = System::Drawing::Size(507, 31);
-			this->registerNoTextLabel->TabIndex = 19;
-			this->registerNoTextLabel->Text = L"Please enter a Username and Password!";
-			this->registerNoTextLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
-			this->registerNoTextLabel->Visible = false;
-			// 
 			// MNL_SignIn
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(192, 192);
@@ -536,21 +575,42 @@ namespace MyNovelList {
 		// "On-click" event for the sign-in button
 		private: System::Void signInButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			// Decrypt user data
+			char c;
+			std::ifstream decIn;
+			std::ofstream decOut;
+
+			decIn.open("UP.dat", std::ios::binary);
+			decOut.open("UP_rawData.dat", std::ios::binary);
+			// Check if the file is empty
+			bool empty = (decIn.get(), decIn.eof());
+			// If not empty, read and decrypt data
+			if (!empty)
+			{
+				decIn.clear();
+				decIn.seekg(0);
+
+				while (decIn)
+				{
+					decIn >> std::noskipws >> c;
+					int temp = c - 42;
+					decOut << (char)temp;
+				}
+			}
+			decIn.close();
+			decOut.close();
+
 			// Temporary strings
 			std::string userTemp, passTemp;
 			// In filestream to the designated filepath
-			std::ifstream in("UP.dat");
+			std::ifstream in("UP_rawData.dat");
 
 			// While the file is open
 			while (in)
 			{
 				// If the filestream can get a line, set userTemp and passTemp to the associated text
-				if (in >> userTemp >> passTemp)
+				if (std::getline(in, userTemp, '\t'), std::getline(in, passTemp))
 				{
-					// Add the temporary variables to their vector lists
-					usernameVector.emplace_back(userTemp);
-					passwordVector.emplace_back(passTemp);
-
 					// If the text in the username and password text boxes match the temporary variables
 					if (msclr::interop::marshal_as<std::string>(usernameTextBox->Text) == userTemp &&
 						msclr::interop::marshal_as<std::string>(passwordTextBox->Text) == passTemp)
@@ -566,6 +626,9 @@ namespace MyNovelList {
 
 			// Close the file
 			in.close();
+
+			// Delete non-encrypted file
+			std::filesystem::remove("UP_rawData.dat");
 
 			// If raw data is correct for both fields then allow access
 			if (loginSuccessful)
@@ -626,12 +689,10 @@ namespace MyNovelList {
 			uaPanel->BringToFront();
 			uaPanel->Show();
 
+			// Hide incorrect details label
 			incorrectDetailsLabel->Visible = false;
 		}
 
-		// Mouse event variables
-		bool isDragging;
-		Point offset;
 		// Allows user to drag around the application window through various mouse events
 		private: System::Void MNL_SignIn_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
 		{
@@ -659,29 +720,96 @@ namespace MyNovelList {
 		// "On-click" event for the register user button
 		private: System::Void registerButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
+			bool usernameExists = false;
+
 			//If username and password fields have data then write it to a .dat file
 			if (registerUserTextBox->Text != "" && registerPassTextBox->Text != "")
 			{
-				registerNoTextLabel->Visible = false;
+				// Check text in text field against every existing username
+				for (int i = 0; i < usernameVector.size(); i++)
+				{
+					// Convert std::string to C# String^
+					String^ temp = msclr::interop::marshal_as<String^>(usernameVector[i]);
+					// If a match is confirmed, display a username already exists error
+					if (registerUserTextBox->Text == temp)
+					{
+						registerSameUsernameLabel->Visible = true;
+						usernameExists = true;
+					}
+				}
 
-				std::ofstream outFile;
-				// Open an out filestream
-				outFile.open("UP.dat", std::fstream::app);
-				// Write the contents of the username and password box to the file
-				outFile << msclr::interop::marshal_as<std::string>(registerUserTextBox->Text) << " " << msclr::interop::marshal_as<std::string>(registerPassTextBox->Text) << std::endl;
-				// Close the file
-				outFile.close();
+				// If username doesn't exist, proceed with registration
+				if (!usernameExists)
+				{
+					// Convert C# String to std::string and add to vector list of usernames
+					std::string temp = msclr::interop::marshal_as<std::string>(registerUserTextBox->Text);
+					usernameVector.emplace_back(temp);
+					registerNoTextLabel->Visible = false;
 
-				// Clear the text boxes
-				registerUserTextBox->Clear();
-				registerPassTextBox->Clear();
+					// Decrypt user data
+					char c;
+					std::ifstream decIn;
+					std::ofstream decOut;
 
-				// Hide the registration panel
-				registerPanel->Hide();
-				registerPanel->SendToBack();
+					decIn.open("UP.dat", std::ios::binary);
+					decOut.open("UP_rawData.dat", std::ios::binary);
+					// Check if the file is empty
+					bool empty = (decIn.get(), decIn.eof());
+					// If not empty, read and decrypt data
+					if (!empty)
+					{
+						decIn.clear();
+						decIn.seekg(0);
+
+						while (decIn)
+						{
+							decIn >> std::noskipws >> c;
+							int temp = c - 42;
+							decOut << (char)temp;
+						}
+					}
+					decIn.close();
+					decOut.close();
+
+					std::ofstream outFile;
+					// Open an out filestream
+					outFile.open("UP_rawData.dat", std::fstream::app);
+					// Write the contents of the username and password box to the file
+					outFile << msclr::interop::marshal_as<std::string>(registerUserTextBox->Text) << "\t" << msclr::interop::marshal_as<std::string>(registerPassTextBox->Text) << std::endl;
+					// Close the file
+					outFile.close();
+
+					// Encrypt user data
+					decIn.open("UP_rawData.dat", std::ios::binary);
+					decOut.open("UP.dat", std::ios::binary);
+
+					while (decIn)
+					{
+						decIn >> std::noskipws >> c;
+						int temp = c + 42;
+						decOut << (char)temp;
+					}
+
+					decIn.close();
+					decOut.close();
+
+					// Delete the 
+					std::filesystem::remove("UP_rawData.dat");
+
+					// Clear the text boxes
+					registerUserTextBox->Clear();
+					registerPassTextBox->Clear();
+
+					// Hide the registration panel
+					registerPanel->Hide();
+					registerPanel->SendToBack();
+				}
 			}
 			else
 			{
+				// Clear registration username and password fields
+				registerUserTextBox->Clear();
+				registerPassTextBox->Clear();
 				// Display an error if one of the text fields is empty
 				registerNoTextLabel->Visible = true;
 			}
@@ -690,11 +818,27 @@ namespace MyNovelList {
 		// "On-click" event for the create account label
 		private: System::Void createAccountLabel_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
-			// Shows the registration panel
+			// Clear sign-in username and password fields
+			usernameTextBox->Clear();
+			passwordTextBox->Clear();
+			// Show the registration panel
 			registerPanel->BringToFront();
 			registerPanel->Show();
 
+			// Hide the incorrect details label
 			incorrectDetailsLabel->Visible = false;
+		}
+
+		// "On-click" event for the cancel registration button
+		private: System::Void registerCancelButton_Click(System::Object^ sender, System::EventArgs^ e) 
+		{
+			// Clear registration username and password fields
+			registerUserTextBox->Clear();
+			registerPassTextBox->Clear();
+			// Hide the registration panel
+			registerSameUsernameLabel->Visible = false;
+			registerPanel->SendToBack();
+			registerPanel->Hide();
 		}
 	};
 }

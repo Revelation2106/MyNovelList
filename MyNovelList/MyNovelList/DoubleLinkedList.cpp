@@ -152,8 +152,16 @@ namespace MyNovelList {
 			if (head->key == k)
 			{
 				// Set head to next
-				head = head->next;
-				head->previous = nullptr;
+				if (head->next == nullptr)
+				{
+					head = nullptr;
+					count = 0;
+				}
+				else
+				{
+					head = head->next;
+					head->previous = nullptr;
+				}
 			}
 			else
 			{
@@ -165,7 +173,7 @@ namespace MyNovelList {
 				// If there is no next node
 				if (nextNode == nullptr)
 				{
-					// Delete k at teh end of linked list
+					// Delete k at the end of linked list
 					prevNode->next = nullptr;
 				}
 				else

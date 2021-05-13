@@ -58,7 +58,7 @@ namespace MyNovelList {
 		// Default constructor.
 		DoubleLinkedList()
 		{
-			head = NULL;
+			head = nullptr;
 		}
 		/// <summary>
 		/// Constructor. Takes a node which will be set as the head. 

@@ -4,8 +4,10 @@
 #include "DoubleLinkedList.h"
 #include "Sort.h"
 
+#include <chrono>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 #include <string>
 #include <msclr/marshal_cppstd.h> //Used to convert C# String^ to C++ std::string and vice-versa
 
@@ -21,6 +23,11 @@ namespace MyNovelList {
 
 	// Global variable used to create user data file based on whoever logs in
 	std::string filename;
+	std::string eFilename;
+	std::string inFilename;
+
+	// Global variable used to measure time of sorting algorithms
+	std::chrono::steady_clock::time_point timerBegin, timerEnd;
 
 	/// <summary>
 	/// Opens the home screen
@@ -59,6 +66,8 @@ namespace MyNovelList {
 	private: System::Windows::Forms::Label^ nameErrorLabel;
 	private: System::Windows::Forms::Label^ authorErrorLabel;
 	private: System::Windows::Forms::Label^ scoreErrorLabel;
+	private: System::Windows::Forms::Label^ sortLabel;
+	private: System::Windows::Forms::TextBox^ timeTextBox;
 	private: System::Windows::Forms::Button^ deleteButton;
 
 	public:
@@ -66,15 +75,43 @@ namespace MyNovelList {
 		{
 			InitializeComponent();
 
-			filename = username + "_data.dat";
+			filename = username + "_rawData.dat";
+			eFilename = username + "_data.dat";
 			std::string title, author, series, volume, score, inKey, keyAccumString;
+		
+			// Decrypt user data
+			char c;
+			std::ifstream decIn;
+			std::ofstream decOut;
+
+			decIn.open(eFilename.c_str(), std::ios::binary);
+			decOut.open(filename.c_str(), std::ios::binary);
+			// Check if the file is empty
+			bool empty = (decIn.get(), decIn.eof());
+			// If not empty, read and decrypt data
+			if (!empty)
+			{
+				decIn.clear();
+				decIn.seekg(0);
+
+				while (decIn)
+				{
+					decIn >> std::noskipws >> c;
+					int temp = c - 42;
+					decOut << (char)temp;
+				}
+			}
+			decIn.close();
+			decOut.close();
+
+			// Read decrypted data
 			std::ifstream in(filename);
 
-			//Open user data file
 			if (in.is_open())
 			{
 				//First line of file is always the key accumulator
 				std::getline(in, keyAccumString);
+
 				if (!keyAccumString.empty())
 				{
 					keyAccum = std::stoi(keyAccumString);
@@ -126,6 +163,9 @@ namespace MyNovelList {
 				//Close user data file
 				in.close();
 			}
+
+			// Delete decrypted file
+			std::filesystem::remove(filename);
 		}
 
 	protected:
@@ -217,6 +257,8 @@ namespace MyNovelList {
 			this->authorErrorLabel = (gcnew System::Windows::Forms::Label());
 			this->scoreErrorLabel = (gcnew System::Windows::Forms::Label());
 			this->deleteButton = (gcnew System::Windows::Forms::Button());
+			this->sortLabel = (gcnew System::Windows::Forms::Label());
+			this->timeTextBox = (gcnew System::Windows::Forms::TextBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->volumeUpDown))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -625,13 +667,10 @@ namespace MyNovelList {
 			this->sortListBox->BackColor = System::Drawing::Color::Wheat;
 			this->sortListBox->FormattingEnabled = true;
 			this->sortListBox->ItemHeight = 25;
-			this->sortListBox->Items->AddRange(gcnew cli::array< System::Object^  >(6) {
-				L"Bubble", L"Selection", L"Insertion", L"Shell",
-					L"Merge", L"Quick"
-			});
-			this->sortListBox->Location = System::Drawing::Point(1456, 792);
+			this->sortListBox->Items->AddRange(gcnew cli::array< System::Object^  >(4) { L"Bubble", L"Selection", L"Insertion", L"Shell" });
+			this->sortListBox->Location = System::Drawing::Point(1457, 823);
 			this->sortListBox->Name = L"sortListBox";
-			this->sortListBox->Size = System::Drawing::Size(100, 179);
+			this->sortListBox->Size = System::Drawing::Size(130, 129);
 			this->sortListBox->TabIndex = 34;
 			// 
 			// sortErrorLabel
@@ -712,6 +751,31 @@ namespace MyNovelList {
 			this->deleteButton->UseVisualStyleBackColor = false;
 			this->deleteButton->Click += gcnew System::EventHandler(this, &MNL_Home::deleteButton_Click);
 			// 
+			// sortLabel
+			// 
+			this->sortLabel->AutoSize = true;
+			this->sortLabel->BackColor = System::Drawing::Color::Transparent;
+			this->sortLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.125F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->sortLabel->ForeColor = System::Drawing::Color::White;
+			this->sortLabel->Location = System::Drawing::Point(1468, 761);
+			this->sortLabel->Name = L"sortLabel";
+			this->sortLabel->Size = System::Drawing::Size(107, 62);
+			this->sortLabel->TabIndex = 41;
+			this->sortLabel->Text = L"Sorting \r\nMethod";
+			this->sortLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			// 
+			// timeTextBox
+			// 
+			this->timeTextBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 7.125F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->timeTextBox->Location = System::Drawing::Point(1457, 959);
+			this->timeTextBox->Name = L"timeTextBox";
+			this->timeTextBox->ReadOnly = true;
+			this->timeTextBox->Size = System::Drawing::Size(130, 29);
+			this->timeTextBox->TabIndex = 42;
+			this->timeTextBox->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
+			// 
 			// MNL_Home
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(192, 192);
@@ -720,6 +784,8 @@ namespace MyNovelList {
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->ClientSize = System::Drawing::Size(1894, 1009);
+			this->Controls->Add(this->timeTextBox);
+			this->Controls->Add(this->sortLabel);
 			this->Controls->Add(this->deleteButton);
 			this->Controls->Add(this->scoreErrorLabel);
 			this->Controls->Add(this->authorErrorLabel);
@@ -787,7 +853,7 @@ namespace MyNovelList {
 			}
 		}
 
-		//"Mouse move" events allows user to move the application by clicking and dragging
+		// "Mouse move" events allows user to move the application by clicking and dragging
 		private: System::Void MNL_Home_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
 		{
 			isDragging = true;
@@ -807,7 +873,7 @@ namespace MyNovelList {
 			isDragging = false;
 		}
 
-		//Button "on-click" events for adding, editing and deleting entries
+		// Button "on-click" events for adding, editing and deleting entries
 		private: System::Void submitButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
 			// Hide error labels for text fields
@@ -838,6 +904,9 @@ namespace MyNovelList {
 			{
 				// Create node with unique key
 				Node* temp = new Node();
+				// Check if the head is nullptr, if so reset keyAccum
+				if (bookLinkedList->head == nullptr)
+					keyAccum = 0;
 				temp->key = keyAccum;
 				String^ tempKey = temp->key.ToString();
 				keyAccum++;
@@ -1003,6 +1072,15 @@ namespace MyNovelList {
 			bookLinkedList->deleteNodeByKey(listKeyInt);
 		}
 
+		// Function to update the timer text box
+		private: void UpdateTimerTextBox(std::chrono::steady_clock::time_point begin, std::chrono::steady_clock::time_point end)
+		{
+			std::chrono::duration<double, std::milli> msDouble = end - begin;
+			std::string msStdString = std::to_string(msDouble.count());
+			String^ msString = msclr::interop::marshal_as<String^>(msStdString) + " ms";
+			timeTextBox->Text = msString;
+		}
+
 		// Sorting button "on-click" event handlers
 		private: System::Void sortTitleButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
@@ -1014,7 +1092,11 @@ namespace MyNovelList {
 			{
 			case 0:
 				sortErrorLabel->Visible = false;
+				timerBegin = std::chrono::high_resolution_clock::now();
 				sortedList = Sort::BubbleTitle(bookLinkedList);
+				timerEnd = std::chrono::high_resolution_clock::now();
+
+				UpdateTimerTextBox(timerBegin, timerEnd);
 				break;
 			case 1:
 				sortErrorLabel->Visible = false;
@@ -1027,10 +1109,6 @@ namespace MyNovelList {
 			case 3:
 				sortErrorLabel->Visible = false;
 				sortedList = Sort::ShellTitle(bookLinkedList);
-				break;
-			case 4:
-				break;
-			case 5:
 				break;
 			default:
 				sortErrorLabel->Visible = true;
@@ -1086,10 +1164,6 @@ namespace MyNovelList {
 				sortErrorLabel->Visible = false;
 				sortedList = Sort::ShellTitle(bookLinkedList, true);
 				break;
-			case 4:
-				break;
-			case 5:
-				break;
 			default:
 				sortErrorLabel->Visible = true;
 				break;
@@ -1143,10 +1217,6 @@ namespace MyNovelList {
 			case 3:
 				sortErrorLabel->Visible = false;
 				sortedList = Sort::ShellAuthor(bookLinkedList);
-				break;
-			case 4:
-				break;
-			case 5:
 				break;
 			default:
 				sortErrorLabel->Visible = true;
@@ -1202,10 +1272,6 @@ namespace MyNovelList {
 				sortErrorLabel->Visible = false;
 				sortedList = Sort::ShellAuthor(bookLinkedList, true);
 				break;
-			case 4:
-				break;
-			case 5:
-				break;
 			default:
 				sortErrorLabel->Visible = true;
 				break;
@@ -1259,10 +1325,6 @@ namespace MyNovelList {
 			case 3:
 				sortErrorLabel->Visible = false;
 				sortedList = Sort::ShellSeries(bookLinkedList);
-				break;
-			case 4:
-				break;
-			case 5:
 				break;
 			default:
 				sortErrorLabel->Visible = true;
@@ -1318,10 +1380,6 @@ namespace MyNovelList {
 				sortErrorLabel->Visible = false;
 				sortedList = Sort::ShellSeries(bookLinkedList, true);
 				break;
-			case 4:
-				break;
-			case 5:
-				break;
 			default:
 				sortErrorLabel->Visible = true;
 				break;
@@ -1376,10 +1434,6 @@ namespace MyNovelList {
 				sortErrorLabel->Visible = false;
 				sortedList = Sort::ShellScore(bookLinkedList);
 				break;
-			case 4:
-				break;
-			case 5:
-				break;
 			default:
 				sortErrorLabel->Visible = true;
 				break;
@@ -1433,10 +1487,6 @@ namespace MyNovelList {
 			case 3:
 				sortErrorLabel->Visible = false;
 				sortedList = Sort::ShellScore(bookLinkedList, true);
-				break;
-			case 4:
-				break;
-			case 5:
 				break;
 			default:
 				sortErrorLabel->Visible = true;
@@ -1520,6 +1570,27 @@ namespace MyNovelList {
 
 			// Close the file
 			outFile.close();
+
+			// Encrypt user data
+			char c;
+			std::ifstream decIn;
+			std::ofstream decOut;
+
+			decIn.open(filename, std::ios::binary);
+			decOut.open(eFilename, std::ios::binary);
+
+			while (decIn)
+			{
+				decIn >> std::noskipws >> c;
+				int temp = c + 42;
+				decOut << (char)temp;
+			}
+
+			decIn.close();
+			decOut.close();
+
+			// Delete non-encrypted file
+			std::filesystem::remove(filename);
 
 			// Restart the application to allow the user to log in again if they wish
 			Application::Restart();
