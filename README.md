@@ -2,6 +2,10 @@
 Digital library created for a UWS module.
 
 Change Log 14/05/2021 - Thomas
+- Refactored Sort to account for volume number when sorting by 
+  author or series
+
+Change Log 14/05/2021 - Thomas
 - Added Clear button to allow users to clear text and score/volume values
 - Refactored the editing process so that when a user selects a book from the 
   ListView, the data is automatically added to the relevant fields. If the user has
