@@ -1,6 +1,17 @@
 # MyNovelList
 Digital library created for a UWS module.
 
+Change Log 14/05/2021 - Thomas
+- Added Clear button to allow users to clear text and score/volume values
+- Refactored the editing process so that when a user selects a book from the 
+  ListView, the data is automatically added to the relevant fields. If the user has
+  added their own text then it will not be overwritten
+- Refactored sort timing into a function which takes a function template
+- Added timing to all of the sorting algorithms
+- Fixed Release version crash caused by no sorting method being selected
+	- Seems like the compiler removed the default break, and thus the code was 
+	  trying to read a nullptr
+
 Change Log 13/05/2021 - Thomas
 - Refactored serialisation to encrypt usernames, passwords and user book data
 - Added a cancel button to the registration panel

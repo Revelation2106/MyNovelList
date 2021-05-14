@@ -68,6 +68,9 @@ namespace MyNovelList {
 	private: System::Windows::Forms::Label^ scoreErrorLabel;
 	private: System::Windows::Forms::Label^ sortLabel;
 	private: System::Windows::Forms::TextBox^ timeTextBox;
+	private: System::Windows::Forms::Label^ deleteErrorLabel;
+	private: System::Windows::Forms::Label^ editErrorLabel;
+	private: System::Windows::Forms::Button^ clearButton;
 	private: System::Windows::Forms::Button^ deleteButton;
 
 	public:
@@ -166,6 +169,9 @@ namespace MyNovelList {
 
 			// Delete decrypted file
 			std::filesystem::remove(filename);
+
+			// Set default sort
+			sortListBox->SelectedIndex = 0;
 		}
 
 	protected:
@@ -259,6 +265,9 @@ namespace MyNovelList {
 			this->deleteButton = (gcnew System::Windows::Forms::Button());
 			this->sortLabel = (gcnew System::Windows::Forms::Label());
 			this->timeTextBox = (gcnew System::Windows::Forms::TextBox());
+			this->deleteErrorLabel = (gcnew System::Windows::Forms::Label());
+			this->editErrorLabel = (gcnew System::Windows::Forms::Label());
+			this->clearButton = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->volumeUpDown))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -400,11 +409,11 @@ namespace MyNovelList {
 			this->submitButton->BackColor = System::Drawing::Color::Wheat;
 			this->submitButton->FlatAppearance->BorderSize = 0;
 			this->submitButton->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->submitButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->submitButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 7.875F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->submitButton->Location = System::Drawing::Point(51, 865);
 			this->submitButton->Name = L"submitButton";
-			this->submitButton->Size = System::Drawing::Size(230, 90);
+			this->submitButton->Size = System::Drawing::Size(230, 40);
 			this->submitButton->TabIndex = 17;
 			this->submitButton->Text = L"Add";
 			this->submitButton->UseVisualStyleBackColor = false;
@@ -455,6 +464,7 @@ namespace MyNovelList {
 			this->libraryDisplayListView->TabIndex = 20;
 			this->libraryDisplayListView->UseCompatibleStateImageBehavior = false;
 			this->libraryDisplayListView->View = System::Windows::Forms::View::Details;
+			this->libraryDisplayListView->SelectedIndexChanged += gcnew System::EventHandler(this, &MNL_Home::libraryDisplayListView_SelectedIndexChanged);
 			// 
 			// titleColumn
 			// 
@@ -776,6 +786,45 @@ namespace MyNovelList {
 			this->timeTextBox->TabIndex = 42;
 			this->timeTextBox->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
 			// 
+			// deleteErrorLabel
+			// 
+			this->deleteErrorLabel->AutoSize = true;
+			this->deleteErrorLabel->BackColor = System::Drawing::Color::Transparent;
+			this->deleteErrorLabel->ForeColor = System::Drawing::Color::Red;
+			this->deleteErrorLabel->Location = System::Drawing::Point(347, 958);
+			this->deleteErrorLabel->Name = L"deleteErrorLabel";
+			this->deleteErrorLabel->Size = System::Drawing::Size(179, 25);
+			this->deleteErrorLabel->TabIndex = 43;
+			this->deleteErrorLabel->Text = L"Nothing selected!";
+			this->deleteErrorLabel->Visible = false;
+			// 
+			// editErrorLabel
+			// 
+			this->editErrorLabel->AutoSize = true;
+			this->editErrorLabel->BackColor = System::Drawing::Color::Transparent;
+			this->editErrorLabel->ForeColor = System::Drawing::Color::Red;
+			this->editErrorLabel->Location = System::Drawing::Point(347, 837);
+			this->editErrorLabel->Name = L"editErrorLabel";
+			this->editErrorLabel->Size = System::Drawing::Size(179, 25);
+			this->editErrorLabel->TabIndex = 44;
+			this->editErrorLabel->Text = L"Nothing selected!";
+			this->editErrorLabel->Visible = false;
+			// 
+			// clearButton
+			// 
+			this->clearButton->BackColor = System::Drawing::Color::Wheat;
+			this->clearButton->FlatAppearance->BorderSize = 0;
+			this->clearButton->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->clearButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 7.875F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->clearButton->Location = System::Drawing::Point(51, 915);
+			this->clearButton->Name = L"clearButton";
+			this->clearButton->Size = System::Drawing::Size(230, 40);
+			this->clearButton->TabIndex = 45;
+			this->clearButton->Text = L"Clear";
+			this->clearButton->UseVisualStyleBackColor = false;
+			this->clearButton->Click += gcnew System::EventHandler(this, &MNL_Home::clearButton_Click);
+			// 
 			// MNL_Home
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(192, 192);
@@ -784,6 +833,9 @@ namespace MyNovelList {
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->ClientSize = System::Drawing::Size(1894, 1009);
+			this->Controls->Add(this->clearButton);
+			this->Controls->Add(this->editErrorLabel);
+			this->Controls->Add(this->deleteErrorLabel);
 			this->Controls->Add(this->timeTextBox);
 			this->Controls->Add(this->sortLabel);
 			this->Controls->Add(this->deleteButton);
@@ -847,6 +899,10 @@ namespace MyNovelList {
 			}
 			else
 			{
+				// Clear and reset the fields
+				seriesTextBox->Clear();
+				volumeUpDown->Value = 1;
+
 				// Disable the options
 				seriesTextBox->Enabled = false;
 				volumeUpDown->Enabled = false;
@@ -873,13 +929,21 @@ namespace MyNovelList {
 			isDragging = false;
 		}
 
+		// Clear error labels
+		private: void ClearErrorLabels()
+		{
+			nameErrorLabel->Visible = false;
+			authorErrorLabel->Visible = false;
+			scoreErrorLabel->Visible = false;
+			editErrorLabel->Visible = false;
+			deleteErrorLabel->Visible = false;
+		}
+
 		// Button "on-click" events for adding, editing and deleting entries
 		private: System::Void submitButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
 			// Hide error labels for text fields
-			nameErrorLabel->Visible = false;
-			authorErrorLabel->Visible = false;
-			scoreErrorLabel->Visible = false;
+			ClearErrorLabels();
 
 			// If the name text box is empty
 			if (nameTextBox->Text == "")
@@ -966,31 +1030,25 @@ namespace MyNovelList {
 		}
 		private: System::Void editButton_Click(System::Object^ sender, System::EventArgs^ e)
 		{	
-			// Hide error labels for text fields
-			nameErrorLabel->Visible = false;
-			authorErrorLabel->Visible = false;
-			scoreErrorLabel->Visible = false;
+			// Hide error labels
+			ClearErrorLabels();
 
 			// If the name text box is empty
 			if (nameTextBox->Text == "")
-			{
-				// Show error message
 				nameErrorLabel->Visible = true;
-			}
 			// If the author text box is empty
 			if (authorTextBox->Text == "")
-			{
-				// Show error message
 				authorErrorLabel->Visible = true;
-			}
 			// If the score ListBox hasn't been selected
 			if (scoreListBox->Text == "")
-			{
-				// Show error message
 				scoreErrorLabel->Visible = true;
-			}
+			// If nothing is selected
+			if (libraryDisplayListView->SelectedItems->Count == 0)
+				editErrorLabel->Visible = true;
+
 			// If no error messages are showing
-			if (!nameErrorLabel->Visible && !authorErrorLabel->Visible && !scoreErrorLabel->Visible)
+			if (!nameErrorLabel->Visible && !authorErrorLabel->Visible && 
+				!scoreErrorLabel->Visible && !editErrorLabel->Visible)
 			{
 				// Get key from ListView
 				std::string listKey = msclr::interop::marshal_as<std::string>(libraryDisplayListView->SelectedItems[0]->SubItems[5]->Text);
@@ -1061,6 +1119,15 @@ namespace MyNovelList {
 		}
 		private: System::Void deleteButton_Click(System::Object^ sender, System::EventArgs^ e)
 		{
+			ClearErrorLabels();
+
+			// Check if anything is selected
+			if (libraryDisplayListView->SelectedItems->Count == 0)
+			{
+				deleteErrorLabel->Visible = true;
+				return;
+			}
+
 			// Get key from ListView
 			std::string listKey = msclr::interop::marshal_as<std::string>(libraryDisplayListView->SelectedItems[0]->SubItems[5]->Text);
 			int listKeyInt = std::stoi(listKey);
@@ -1081,6 +1148,20 @@ namespace MyNovelList {
 			timeTextBox->Text = msString;
 		}
 
+		// Function which can be passed a sorting algorithm template to time
+		template<typename Func>
+		DoubleLinkedList* TimeASort(Func sort, bool isBack)
+		{
+			DoubleLinkedList* temp;
+			timerBegin = std::chrono::high_resolution_clock::now();
+			temp = sort(bookLinkedList, isBack);
+			timerEnd = std::chrono::high_resolution_clock::now();
+
+			UpdateTimerTextBox(timerBegin, timerEnd);
+
+			return temp;
+		}
+
 		// Sorting button "on-click" event handlers
 		private: System::Void sortTitleButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
@@ -1092,23 +1173,19 @@ namespace MyNovelList {
 			{
 			case 0:
 				sortErrorLabel->Visible = false;
-				timerBegin = std::chrono::high_resolution_clock::now();
-				sortedList = Sort::BubbleTitle(bookLinkedList);
-				timerEnd = std::chrono::high_resolution_clock::now();
-
-				UpdateTimerTextBox(timerBegin, timerEnd);
+				sortedList = TimeASort(Sort::BubbleTitle, false);
 				break;
 			case 1:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::SelectionTitle(bookLinkedList);
+				sortedList = TimeASort(Sort::SelectionTitle, false);
 				break;
 			case 2:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::InsertionTitle(bookLinkedList);
+				sortedList = TimeASort(Sort::InsertionTitle, false);;
 				break;
 			case 3:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::ShellTitle(bookLinkedList);
+				sortedList = TimeASort(Sort::ShellTitle, false);
 				break;
 			default:
 				sortErrorLabel->Visible = true;
@@ -1116,7 +1193,7 @@ namespace MyNovelList {
 			}
 
 			// Adds sorted list to ListView after clearing current ListView
-			if (sortedList)
+			if (sortedList && !sortErrorLabel->Visible)
 			{
 				libraryDisplayListView->Items->Clear();
 
@@ -1150,19 +1227,19 @@ namespace MyNovelList {
 			{
 			case 0:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::BubbleTitle(bookLinkedList, true);
+				sortedList = TimeASort(Sort::BubbleTitle, true);
 				break;
 			case 1:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::SelectionTitle(bookLinkedList, true);
+				sortedList = TimeASort(Sort::SelectionTitle, true);
 				break;
 			case 2:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::InsertionTitle(bookLinkedList, true);
+				sortedList = TimeASort(Sort::InsertionTitle, true);
 				break;
 			case 3:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::ShellTitle(bookLinkedList, true);
+				sortedList = TimeASort(Sort::ShellTitle, true);
 				break;
 			default:
 				sortErrorLabel->Visible = true;
@@ -1204,19 +1281,19 @@ namespace MyNovelList {
 			{
 			case 0:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::BubbleAuthor(bookLinkedList);
+				sortedList = TimeASort(Sort::BubbleAuthor, false);
 				break;
 			case 1:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::SelectionAuthor(bookLinkedList);
+				sortedList = TimeASort(Sort::SelectionAuthor, false);
 				break;
 			case 2:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::InsertionAuthor(bookLinkedList);
+				sortedList = TimeASort(Sort::InsertionAuthor, false);
 				break;
 			case 3:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::ShellAuthor(bookLinkedList);
+				sortedList = TimeASort(Sort::ShellAuthor, false);
 				break;
 			default:
 				sortErrorLabel->Visible = true;
@@ -1258,19 +1335,19 @@ namespace MyNovelList {
 			{
 			case 0:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::BubbleAuthor(bookLinkedList, true);
+				sortedList = TimeASort(Sort::BubbleAuthor, true);
 				break;
 			case 1:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::SelectionAuthor(bookLinkedList, true);
+				sortedList = TimeASort(Sort::SelectionAuthor, true);
 				break;
 			case 2:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::InsertionAuthor(bookLinkedList, true);
+				sortedList = TimeASort(Sort::InsertionAuthor, true);
 				break;
 			case 3:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::ShellAuthor(bookLinkedList, true);
+				sortedList = TimeASort(Sort::ShellAuthor, true);
 				break;
 			default:
 				sortErrorLabel->Visible = true;
@@ -1312,19 +1389,19 @@ namespace MyNovelList {
 			{
 			case 0:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::BubbleSeries(bookLinkedList);
+				sortedList = TimeASort(Sort::BubbleSeries, false);
 				break;
 			case 1:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::SelectionSeries(bookLinkedList);
+				sortedList = TimeASort(Sort::SelectionSeries, false);
 				break;
 			case 2:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::InsertionSeries(bookLinkedList);
+				sortedList = TimeASort(Sort::InsertionSeries, false);
 				break;
 			case 3:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::ShellSeries(bookLinkedList);
+				sortedList = TimeASort(Sort::ShellSeries, false);
 				break;
 			default:
 				sortErrorLabel->Visible = true;
@@ -1366,19 +1443,19 @@ namespace MyNovelList {
 			{
 			case 0:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::BubbleSeries(bookLinkedList, true);
+				sortedList = TimeASort(Sort::BubbleSeries, true);
 				break;
 			case 1:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::SelectionSeries(bookLinkedList, true);
+				sortedList = TimeASort(Sort::SelectionSeries, true);
 				break;
 			case 2:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::InsertionSeries(bookLinkedList, true);
+				sortedList = TimeASort(Sort::InsertionSeries, true);
 				break;
 			case 3:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::ShellSeries(bookLinkedList, true);
+				sortedList = TimeASort(Sort::ShellSeries, true);
 				break;
 			default:
 				sortErrorLabel->Visible = true;
@@ -1420,19 +1497,19 @@ namespace MyNovelList {
 			{
 			case 0:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::BubbleScore(bookLinkedList);
+				sortedList = TimeASort(Sort::BubbleScore, false);
 				break;
 			case 1:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::SelectionScore(bookLinkedList);
+				sortedList = TimeASort(Sort::SelectionScore, false);
 				break;
 			case 2:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::InsertionScore(bookLinkedList);
+				sortedList = TimeASort(Sort::InsertionScore, false);
 				break;
 			case 3:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::ShellScore(bookLinkedList);
+				sortedList = TimeASort(Sort::ShellScore, false);
 				break;
 			default:
 				sortErrorLabel->Visible = true;
@@ -1474,19 +1551,19 @@ namespace MyNovelList {
 			{
 			case 0:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::BubbleScore(bookLinkedList, true);
+				sortedList = TimeASort(Sort::BubbleScore, true);
 				break;
 			case 1:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::SelectionScore(bookLinkedList, true);
+				sortedList = TimeASort(Sort::SelectionScore, true);
 				break;
 			case 2:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::InsertionScore(bookLinkedList, true);
+				sortedList = TimeASort(Sort::InsertionScore, true);
 				break;
 			case 3:
 				sortErrorLabel->Visible = false;
-				sortedList = Sort::ShellScore(bookLinkedList, true);
+				sortedList = TimeASort(Sort::ShellScore, true);
 				break;
 			default:
 				sortErrorLabel->Visible = true;
@@ -1597,6 +1674,57 @@ namespace MyNovelList {
 			// In order to avoid a fatal crash when calling Restart(), 
 			// the current environment must exit with code 0
 			Environment::Exit(0);
+		}
+
+		// "Selection index changed" event handler for the ListView
+		private: System::Void libraryDisplayListView_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e) 
+		{
+			// Check if anything is actually selected
+			if (libraryDisplayListView->SelectedItems->Count > 0)
+			{
+				// Create temporary variable to extract data from
+				ListViewItem^ temp = libraryDisplayListView->SelectedItems[0];
+				if (temp)
+				{
+					// Only replace fields if the user hasn't input something already
+					if (nameTextBox->Text == "")
+						nameTextBox->Text = temp->SubItems[0]->Text;
+					if (authorTextBox->Text == "")
+						authorTextBox->Text = temp->SubItems[1]->Text;
+					if (seriesTextBox->Text == "")
+						seriesTextBox->Text = temp->SubItems[2]->Text;
+
+					if (seriesTextBox->Text != "")
+						seriesCheckBox->Checked = true;
+					else
+						seriesCheckBox->Checked = false;
+
+					// ->Value and ->SelectedIndex requires an int, so convert from String^ 
+					// to std::string and then do std::stoi to get int value
+					std::string volString = msclr::interop::marshal_as<std::string>(temp->SubItems[3]->Text);
+					int volTemp = std::stoi(volString);
+					volumeUpDown->Value = volTemp;
+
+					std::string scoreString = msclr::interop::marshal_as<std::string>(temp->SubItems[4]->Text);
+					int scoreTemp = std::stoi(scoreString);
+					scoreListBox->SelectedIndex = scoreTemp - 1;
+				}
+			}
+		}
+
+		// "On-click" event handler for the clear button
+		private: System::Void clearButton_Click(System::Object^ sender, System::EventArgs^ e) 
+		{
+			// Clears text and resets values for all input options
+			nameTextBox->Clear();
+			authorTextBox->Clear();
+			seriesCheckBox->Checked = false;
+			seriesTextBox->Clear();
+			volumeUpDown->Value = 1;
+			scoreListBox->SelectedIndex = 0;
+			scoreListBox->SelectedIndex = -1;
+			// Deselects anything in the ListView
+			libraryDisplayListView->SelectedIndices->Clear();
 		}
 	};
 }

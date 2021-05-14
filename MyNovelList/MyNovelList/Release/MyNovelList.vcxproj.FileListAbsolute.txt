@@ -1,0 +1,3 @@
+C:\Users\Thomas\Desktop\Uni Temp\MyNovelList\MyNovelList\MyNovelList\Release\MyNovelList.MNL_Home.resources
+C:\Users\Thomas\Desktop\Uni Temp\MyNovelList\MyNovelList\MyNovelList\Release\MyNovelList.MNL_SignIn.resources
+C:\Users\Thomas\Desktop\Uni Temp\MyNovelList\MyNovelList\MyNovelList\Release\MyNovelList.vcxproj.GenerateResource.cache
