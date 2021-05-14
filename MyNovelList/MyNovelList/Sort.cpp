@@ -54,7 +54,8 @@ namespace MyNovelList {
                 for (int j = 1; j < list->size(); j++)
                 {
                     // If the node at j-1's author is alphabetically lower (Z < A for example)
-                    if ((*list)[j - 1]->data->author < (*list)[j]->data->author)
+                    if ((*list)[j - 1]->data->author < (*list)[j]->data->author ||
+                       ((*list)[j - 1]->data->author == (*list)[j]->data->author && (*list)[j - 1]->data->volume < (*list)[j]->data->volume))
                     {
                         // Swap the nodes
                         list->swap((*list)[j - 1], (*list)[j]);
@@ -70,7 +71,8 @@ namespace MyNovelList {
             {
                 for (int j = 1; j < list->size(); j++)
                 {
-                    if ((*list)[j - 1]->data->author > (*list)[j]->data->author)
+                    if ((*list)[j - 1]->data->author > (*list)[j]->data->author ||
+                       ((*list)[j - 1]->data->author == (*list)[j]->data->author && (*list)[j - 1]->data->volume > (*list)[j]->data->volume))
                     {
                         list->swap((*list)[j - 1], (*list)[j]);
                     }
@@ -92,7 +94,8 @@ namespace MyNovelList {
                 for (int j = 1; j < list->size(); j++)
                 {
                     // If the node at j-1's series is alphabetically lower (Z < A for example)
-                    if ((*list)[j - 1]->data->series < (*list)[j]->data->series)
+                    if ((*list)[j - 1]->data->series < (*list)[j]->data->series ||
+                       ((*list)[j - 1]->data->series == (*list)[j]->data->series && (*list)[j - 1]->data->volume < (*list)[j]->data->volume))
                     {
                         // Swap the nodes
                         list->swap((*list)[j - 1], (*list)[j]);
@@ -108,7 +111,8 @@ namespace MyNovelList {
             {
                 for (int j = 1; j < list->size(); j++)
                 {
-                    if ((*list)[j - 1]->data->series > (*list)[j]->data->series)
+                    if ((*list)[j - 1]->data->series > (*list)[j]->data->series ||
+                       ((*list)[j - 1]->data->series == (*list)[j]->data->series && (*list)[j - 1]->data->volume > (*list)[j]->data->volume))
                     {
                         list->swap((*list)[j - 1], (*list)[j]);
                     }
@@ -233,7 +237,8 @@ namespace MyNovelList {
                 for (int j = i; j < list->size(); j++)
                 {
                     // If the node at j's author is alphabetically higher
-                    if ((*list)[j]->data->author > max->data->author)
+                    if ((*list)[j]->data->author > max->data->author ||
+                       ((*list)[j]->data->author == max->data->author && (*list)[j]->data->volume > max->data->volume))
                     {
                         // Set temporary node to equal the node at index j
                         max = (*list)[j];
@@ -259,7 +264,8 @@ namespace MyNovelList {
 
                 for (int j = i; j < list->size(); j++)
                 {
-                    if ((*list)[j]->data->author < min->data->author)
+                    if ((*list)[j]->data->author < min->data->author ||
+                       ((*list)[j]->data->author == min->data->author && (*list)[j]->data->volume < min->data->volume))
                     {
                         min = (*list)[j];
                         minIndex = j;
@@ -290,7 +296,8 @@ namespace MyNovelList {
                 for (int j = i; j < list->size(); j++)
                 {
                     // If the node at j's series is alphabetically higher
-                    if ((*list)[j]->data->series > max->data->series)
+                    if ((*list)[j]->data->series > max->data->series ||
+                       ((*list)[j]->data->series == max->data->series && (*list)[j]->data->volume > max->data->volume))
                     {
                         // Set temporary node to equal the node at index j
                         max = (*list)[j];
@@ -316,7 +323,8 @@ namespace MyNovelList {
 
                 for (int j = i; j < list->size(); j++)
                 {
-                    if ((*list)[j]->data->series < min->data->series)
+                    if ((*list)[j]->data->series < min->data->series ||
+                       ((*list)[j]->data->series == min->data->series && (*list)[j]->data->volume < min->data->volume))
                     {
                         min = (*list)[j];
                         minIndex = j;
@@ -452,7 +460,8 @@ namespace MyNovelList {
 
                 // Loop while j > 0 and the node at index j-1's author is alphabetically 
                 // lower than the temporary node's author
-                while (j > 0 && (*list)[j - 1]->data->author < key->data->author)
+                while (j > 0 && ((*list)[j - 1]->data->author < key->data->author ||
+                      ((*list)[j - 1]->data->author == key->data->author && (*list)[j - 1]->data->volume < key->data->volume)))
                 {
                     // Swap the nodes at index j-1 and j
                     list->swap((*list)[j - 1], (*list)[j]);
@@ -472,7 +481,8 @@ namespace MyNovelList {
             {
                 auto key = (*list)[i];
                 int j = i;
-                while (j > 0 && (*list)[j - 1]->data->author > key->data->author)
+                while (j > 0 && ((*list)[j - 1]->data->author > key->data->author ||
+                      ((*list)[j - 1]->data->author == key->data->author && (*list)[j - 1]->data->volume > key->data->volume)))
                 {
                     list->swap((*list)[j - 1], (*list)[j]);
                     j = j - 1;
@@ -499,7 +509,8 @@ namespace MyNovelList {
 
                 // Loop while j > 0 and the node at index j-1's series is alphabetically 
                 // lower than the temporary node's series
-                while (j > 0 && (*list)[j - 1]->data->series < key->data->series)
+                while (j > 0 && ((*list)[j - 1]->data->series < key->data->series ||
+                      ((*list)[j - 1]->data->series == key->data->series && (*list)[j - 1]->data->volume < key->data->volume)))
                 {
                     // Swap the nodes at index j-1 and j
                     list->swap((*list)[j - 1], (*list)[j]);
@@ -519,7 +530,8 @@ namespace MyNovelList {
             {
                 auto key = (*list)[i];
                 int j = i;
-                while (j > 0 && (*list)[j - 1]->data->series > key->data->series)
+                while (j > 0 && ((*list)[j - 1]->data->series > key->data->series ||
+                    ((*list)[j - 1]->data->series == key->data->series && (*list)[j - 1]->data->volume > key->data->volume)))
                 {
                     list->swap((*list)[j - 1], (*list)[j]);
                     j = j - 1;
@@ -652,7 +664,10 @@ namespace MyNovelList {
 
                     // Loop while i < j and if the author at index i-gap is 
                     // alphabeticaly lower than the author at index temp
-                    for (i = j; (i >= gap) && ((*list)[i - gap]->data->author < temp->data->author); i -= gap)
+                    for (i = j; 
+                        (i >= gap) && (((*list)[i - gap]->data->author < temp->data->author ||
+                                      ((*list)[i - gap]->data->author == temp->data->author && (*list)[i - gap]->data->volume < temp->data->volume)));
+                        i -= gap)
                     {
                         // Swap the nodes at index i-gap and i
                         list->swap((*list)[i - gap], (*list)[i]);
@@ -674,7 +689,10 @@ namespace MyNovelList {
                     auto temp = (*list)[j];
                     int i = 0;
 
-                    for (i = j; (i >= gap) && ((*list)[i - gap]->data->author > temp->data->author); i -= gap)
+                    for (i = j; 
+                        (i >= gap) && (((*list)[i - gap]->data->author > temp->data->author ||
+                                      ((*list)[i - gap]->data->author == temp->data->author && (*list)[i - gap]->data->volume > temp->data->volume)));
+                        i -= gap)
                     {
                         list->swap((*list)[i - gap], (*list)[i]);
                     }
@@ -705,7 +723,10 @@ namespace MyNovelList {
 
                     // Loop while i < j and if the series at index i-gap is 
                     // alphabeticaly lower than the series at index temp
-                    for (i = j; (i >= gap) && ((*list)[i - gap]->data->series < temp->data->series); i -= gap)
+                    for (i = j;
+                        (i >= gap) && (((*list)[i - gap]->data->series < temp->data->series ||
+                                      ((*list)[i - gap]->data->series == temp->data->series && (*list)[i - gap]->data->volume < temp->data->volume)));
+                        i -= gap)
                     {
                         // Swap the nodes at index i-gap and i
                         list->swap((*list)[i - gap], (*list)[i]);
@@ -727,7 +748,10 @@ namespace MyNovelList {
                     auto temp = (*list)[j];
                     int i = 0;
 
-                    for (i = j; (i >= gap) && ((*list)[i - gap]->data->series > temp->data->series); i -= gap)
+                    for (i = j;
+                        (i >= gap) && (((*list)[i - gap]->data->series > temp->data->series ||
+                            ((*list)[i - gap]->data->series == temp->data->series && (*list)[i - gap]->data->volume > temp->data->volume)));
+                        i -= gap)
                     {
                         list->swap((*list)[i - gap], (*list)[i]);
                     }
