@@ -27,8 +27,8 @@ namespace MyNovelList {
 		std::string author;
 		bool isSeries;
 		std::string series;
-		std::string volume;
-		std::string score;
+		int volume;
+		int score;
 	};
 
 	// Node class used in the doubly linked list.

@@ -156,8 +156,8 @@ namespace MyNovelList {
 						b->series = series;
 					}
 
-					b->volume = volume;
-					b->score = score;
+					b->volume = std::stoi(volume);
+					b->score = std::stoi(score);
 
 					//Adds book to linked list
 					temp->data = b;
@@ -168,8 +168,8 @@ namespace MyNovelList {
 					subItems[0] = msclr::interop::marshal_as<String^>(b->title);
 					subItems[1] = msclr::interop::marshal_as<String^>(b->author);
 					subItems[2] = msclr::interop::marshal_as<String^>(b->series);
-					subItems[3] = msclr::interop::marshal_as<String^>(b->volume);
-					subItems[4] = msclr::interop::marshal_as<String^>(b->score);
+					subItems[3] = msclr::interop::marshal_as<String^>(volume);
+					subItems[4] = msclr::interop::marshal_as<String^>(score);
 					subItems[5] = tempKey;
 					ListViewItem^ tempLV = gcnew ListViewItem(subItems);
 					libraryDisplayListView->Items->Add(tempLV);
@@ -995,20 +995,21 @@ namespace MyNovelList {
 				// Gets the score from the ListBox and converts it into a string
 				std::string tempScoreString = msclr::interop::marshal_as<std::string>(scoreListBox->Text);
 				int pos = tempScoreString.find(" - ");
-				b->score = tempScoreString.substr(0, pos);
+				b->score = std::stoi(tempScoreString.substr(0, pos));
 
 				// Checks if book is a series and fills out info as appropriate
 				if (seriesCheckBox->Checked)
 				{
 					b->isSeries = true;
 					b->series = msclr::interop::marshal_as<std::string>(seriesTextBox->Text);
-					b->volume = msclr::interop::marshal_as<std::string>(volumeUpDown->Text);
+					std::string volString = msclr::interop::marshal_as<std::string>(volumeUpDown->Text);
+					b->volume = std::stoi(volString);
 				}
 				else
 				{
 					b->isSeries = false;
 					b->series = "";
-					b->volume = "1";
+					b->volume = 1;
 				}
 
 				// Adds book to linked list
@@ -1020,8 +1021,8 @@ namespace MyNovelList {
 				subItems[0] = msclr::interop::marshal_as<String^>(b->title);
 				subItems[1] = msclr::interop::marshal_as<String^>(b->author);
 				subItems[2] = msclr::interop::marshal_as<String^>(b->series);
-				subItems[3] = msclr::interop::marshal_as<String^>(b->volume);
-				subItems[4] = msclr::interop::marshal_as<String^>(b->score);
+				subItems[3] = msclr::interop::marshal_as<String^>(std::to_string(b->volume));
+				subItems[4] = msclr::interop::marshal_as<String^>(std::to_string(b->score));
 				subItems[5] = tempKey;
 				ListViewItem^ tempLV = gcnew ListViewItem(subItems);
 				libraryDisplayListView->Items->Add(tempLV);
@@ -1074,20 +1075,21 @@ namespace MyNovelList {
 				// Gets the score from the ListBox and converts it into a string
 				std::string tempScoreString = msclr::interop::marshal_as<std::string>(scoreListBox->Text);
 				int pos = tempScoreString.find(" - ");
-				b->score = tempScoreString.substr(0, pos);
+				b->score = std::stoi(tempScoreString.substr(0, pos));
 
 				// Checks if book is a series and fills out info as appropriate
 				if (seriesCheckBox->Checked)
 				{
 				   b->isSeries = true;
 				   b->series = msclr::interop::marshal_as<std::string>(seriesTextBox->Text);
-				   b->volume = msclr::interop::marshal_as<std::string>(volumeUpDown->Text);
+				   std::string volTemp = msclr::interop::marshal_as<std::string>(volumeUpDown->Text);
+				   b->volume = std::stoi(volTemp);
 				}
 				else
 				{
 				   b->isSeries = false;
 				   b->series = "";
-				   b->volume = "1";
+				   b->volume = 1;
 				}
 
 				// Updates linked list with new data
@@ -1105,8 +1107,8 @@ namespace MyNovelList {
 				   subItems[0] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->title);
 				   subItems[1] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->author);
 				   subItems[2] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->series);
-				   subItems[3] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->volume);
-				   subItems[4] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->score);
+				   subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*bookLinkedList)[i]->data->volume));
+				   subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*bookLinkedList)[i]->data->score));
 
 				   String^ keyString = (*bookLinkedList)[i]->key.ToString();
 
@@ -1215,8 +1217,8 @@ namespace MyNovelList {
 					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
 					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
 					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->volume);
-					subItems[4] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->score);
+					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
+					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
 
 					String^ keyString = (*sortedList)[i]->key.ToString();
 
@@ -1269,8 +1271,8 @@ namespace MyNovelList {
 					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
 					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
 					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->volume);
-					subItems[4] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->score);
+					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
+					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
 
 					String^ keyString = (*sortedList)[i]->key.ToString();
 
@@ -1323,8 +1325,8 @@ namespace MyNovelList {
 					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
 					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
 					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->volume);
-					subItems[4] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->score);
+					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
+					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
 
 					String^ keyString = (*sortedList)[i]->key.ToString();
 
@@ -1377,8 +1379,8 @@ namespace MyNovelList {
 					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
 					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
 					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->volume);
-					subItems[4] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->score);
+					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
+					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
 
 					String^ keyString = (*sortedList)[i]->key.ToString();
 
@@ -1431,8 +1433,8 @@ namespace MyNovelList {
 					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
 					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
 					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->volume);
-					subItems[4] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->score);
+					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
+					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
 
 					String^ keyString = (*sortedList)[i]->key.ToString();
 
@@ -1485,8 +1487,8 @@ namespace MyNovelList {
 					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
 					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
 					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->volume);
-					subItems[4] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->score);
+					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
+					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
 
 					String^ keyString = (*sortedList)[i]->key.ToString();
 
@@ -1539,8 +1541,8 @@ namespace MyNovelList {
 					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
 					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
 					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->volume);
-					subItems[4] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->score);
+					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
+					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
 
 					String^ keyString = (*sortedList)[i]->key.ToString();
 
@@ -1593,8 +1595,8 @@ namespace MyNovelList {
 					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
 					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
 					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->volume);
-					subItems[4] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->score);
+					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
+					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
 
 					String^ keyString = (*sortedList)[i]->key.ToString();
 
@@ -1633,8 +1635,8 @@ namespace MyNovelList {
 				{
 				   outSeries = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->series);
 				}
-				String^ outVolume = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->volume);
-				String^ outScore = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->score);
+				String^ outVolume = msclr::interop::marshal_as<String^>(std::to_string((*bookLinkedList)[i]->data->volume));
+				String^ outScore = msclr::interop::marshal_as<String^>(std::to_string((*bookLinkedList)[i]->data->score));
 
 				String^ keyString = (*bookLinkedList)[i]->key.ToString();
 				String^ outKey = keyString;
