@@ -27,6 +27,9 @@ namespace MyNovelList {
 	using namespace System::Data;
 	using namespace System::Drawing;
 
+	// Predicate to check for newline character
+	auto isNewLine = [](auto&& item) -> bool { return item == '\n'; };
+
 	// Global username vector list used when registering new users
 	std::vector<std::string> usernameVector;
 
@@ -604,7 +607,7 @@ namespace MyNovelList {
 
 				while (decIn)
 				{
-					decIn >> std::noskipws >> c;
+					decIn >> std::skipws >> c;
 					int temp = c - 42;
 					decOut << (char)temp;
 				}
@@ -623,6 +626,7 @@ namespace MyNovelList {
 				// If the filestream can get a line, set userTemp and passTemp to the associated text
 				if (std::getline(in, userTemp, '\t'), std::getline(in, passTemp))
 				{
+					userTemp.erase(std::remove_if(userTemp.begin(), userTemp.end(), isNewLine), userTemp.end());
 					// If the text in the username and password text boxes match the temporary variables
 					if (msclr::interop::marshal_as<std::string>(usernameTextBox->Text) == userTemp &&
 						msclr::interop::marshal_as<std::string>(passwordTextBox->Text) == passTemp)
@@ -775,7 +779,7 @@ namespace MyNovelList {
 
 						while (decIn)
 						{
-							decIn >> std::noskipws >> c;
+							decIn >> std::skipws >> c;
 							int temp = c - 42;
 							decOut << (char)temp;
 						}
@@ -784,10 +788,11 @@ namespace MyNovelList {
 					decOut.close();
 
 					std::ofstream outFile;
+					//std::stringstream outFile;
 					// Open an out filestream
 					outFile.open("UP_rawData.dat", std::fstream::app);
 					// Write the contents of the username and password box to the file
-					outFile << msclr::interop::marshal_as<std::string>(registerUserTextBox->Text) << "\t" << msclr::interop::marshal_as<std::string>(registerPassTextBox->Text) << std::endl;
+					outFile << msclr::interop::marshal_as<std::string>(registerUserTextBox->Text) << '\t' << msclr::interop::marshal_as<std::string>(registerPassTextBox->Text) << '\n';
 					// Close the file
 					outFile.close();
 
