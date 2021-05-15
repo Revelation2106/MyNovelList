@@ -41,6 +41,15 @@ namespace MyNovelList {
 	// Global variable used to measure time of sorting algorithms
 	std::chrono::steady_clock::time_point timerBegin, timerEnd;
 
+	// Sorting enum
+	enum SortingAlgorithm
+	{
+		Bubble = 0,
+		Selection,
+		Insertion,
+		Shell,
+	};
+
 	/// <summary>
 	/// Opens the home screen
 	/// </summary>
@@ -72,7 +81,7 @@ namespace MyNovelList {
 	private: System::Windows::Forms::Button^ sortScoreDescButton;
 	private: System::Windows::Forms::Button^ sortScoreAscButton;
 	private: System::Windows::Forms::ListBox^ sortListBox;
-	private: System::Windows::Forms::Label^ sortErrorLabel;
+
 	internal: System::Windows::Forms::ColumnHeader^ keyColumn;
 	private: System::Windows::Forms::Button^ editButton;
 	private: System::Windows::Forms::Label^ nameErrorLabel;
@@ -269,7 +278,6 @@ namespace MyNovelList {
 			this->sortScoreDescButton = (gcnew System::Windows::Forms::Button());
 			this->sortScoreAscButton = (gcnew System::Windows::Forms::Button());
 			this->sortListBox = (gcnew System::Windows::Forms::ListBox());
-			this->sortErrorLabel = (gcnew System::Windows::Forms::Label());
 			this->editButton = (gcnew System::Windows::Forms::Button());
 			this->nameErrorLabel = (gcnew System::Windows::Forms::Label());
 			this->authorErrorLabel = (gcnew System::Windows::Forms::Label());
@@ -695,18 +703,6 @@ namespace MyNovelList {
 			this->sortListBox->Size = System::Drawing::Size(130, 129);
 			this->sortListBox->TabIndex = 34;
 			// 
-			// sortErrorLabel
-			// 
-			this->sortErrorLabel->AutoSize = true;
-			this->sortErrorLabel->BackColor = System::Drawing::Color::Transparent;
-			this->sortErrorLabel->ForeColor = System::Drawing::Color::Red;
-			this->sortErrorLabel->Location = System::Drawing::Point(931, 966);
-			this->sortErrorLabel->Name = L"sortErrorLabel";
-			this->sortErrorLabel->Size = System::Drawing::Size(313, 25);
-			this->sortErrorLabel->TabIndex = 35;
-			this->sortErrorLabel->Text = L"Please select a sorting method!";
-			this->sortErrorLabel->Visible = false;
-			// 
 			// editButton
 			// 
 			this->editButton->BackColor = System::Drawing::Color::Wheat;
@@ -855,7 +851,6 @@ namespace MyNovelList {
 			this->Controls->Add(this->authorErrorLabel);
 			this->Controls->Add(this->nameErrorLabel);
 			this->Controls->Add(this->editButton);
-			this->Controls->Add(this->sortErrorLabel);
 			this->Controls->Add(this->sortListBox);
 			this->Controls->Add(this->sortScoreLabel);
 			this->Controls->Add(this->sortScoreDescButton);
@@ -1163,12 +1158,11 @@ namespace MyNovelList {
 		}
 
 		// Function which can be passed a sorting algorithm template to time
-		template<typename Func>
-		DoubleLinkedList* TimeASort(Func sort, bool isBack)
+		DoubleLinkedList* TimeASort(Sort::SortFunc sort, Sort::CompareFunc comparator, bool isBack)
 		{
 			DoubleLinkedList* temp;
 			timerBegin = std::chrono::high_resolution_clock::now();
-			temp = sort(bookLinkedList, isBack);
+			temp = sort(bookLinkedList, comparator, isBack);
 			timerEnd = std::chrono::high_resolution_clock::now();
 
 			UpdateTimerTextBox(timerBegin, timerEnd);
@@ -1176,438 +1170,111 @@ namespace MyNovelList {
 			return temp;
 		}
 
+		void UpdateListView()
+		{
+			libraryDisplayListView->Items->Clear();
+
+			for (int i = 0; i < bookLinkedList->size(); i++)
+			{
+				array<String^>^ subItems = gcnew array<String^>(6);
+				subItems[0] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->title);
+				subItems[1] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->author);
+				subItems[2] = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->series);
+				subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*bookLinkedList)[i]->data->volume));
+				subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*bookLinkedList)[i]->data->score));
+
+				String^ keyString = (*bookLinkedList)[i]->key.ToString();
+
+				subItems[5] = keyString;
+				ListViewItem^ tempLV = gcnew ListViewItem(subItems);
+				libraryDisplayListView->Items->Add(tempLV);
+			}
+		}
+
+		void DecideSort(Sort::CompareFunc comparator, bool isBack)
+		{
+			// Switch statement to determine which sorting algorithm to apply
+			switch (sortListBox->SelectedIndex)
+			{
+			case SortingAlgorithm::Bubble:
+				bookLinkedList = TimeASort(Sort::BubbleSort, comparator, isBack);
+				break;
+			case SortingAlgorithm::Selection:
+				bookLinkedList = TimeASort(Sort::SelectionSort, comparator, isBack);
+				break;
+			case SortingAlgorithm::Insertion:
+				bookLinkedList = TimeASort(Sort::InsertionSort, comparator, isBack);
+				break;
+			case SortingAlgorithm::Shell:
+				bookLinkedList = TimeASort(Sort::ShellSort, comparator, isBack);
+				break;
+			}
+		}
+
 		// Sorting button "on-click" event handlers
 		private: System::Void sortTitleButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
-			// Temporary linked list
-			DoubleLinkedList* sortedList;
+			// Decide on which sorting algorithm to apply
+			DecideSort(Sort::CompareTitle, false);
 
-			// Switch statement to determine which sorting algorithm to apply
-			switch (sortListBox->SelectedIndex)
-			{
-			case 0:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::BubbleTitle, false);
-				break;
-			case 1:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::SelectionTitle, false);
-				break;
-			case 2:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::InsertionTitle, false);;
-				break;
-			case 3:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::ShellTitle, false);
-				break;
-			default:
-				sortErrorLabel->Visible = true;
-				break;
-			}
-
-			// Adds sorted list to ListView after clearing current ListView
-			if (sortedList && !sortErrorLabel->Visible)
-			{
-				libraryDisplayListView->Items->Clear();
-
-				for (int i = 0; i < sortedList->size(); i++)
-				{
-					array<String^>^ subItems = gcnew array<String^>(6);
-					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
-					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
-					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
-					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
-
-					String^ keyString = (*sortedList)[i]->key.ToString();
-
-					subItems[5] = keyString;
-					ListViewItem^ tempLV = gcnew ListViewItem(subItems);
-					libraryDisplayListView->Items->Add(tempLV);
-				}
-
-				// Sets the bookLinkedList pointer to the new sorted list
-				bookLinkedList = sortedList;
-			}
+			// Updates ListView with sorted data
+			UpdateListView();
 		}
 		private: System::Void sortTitleDescButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
-			// Temporary linked list
-			DoubleLinkedList* sortedList;
+			// Decide on which sorting algorithm to apply
+			DecideSort(Sort::CompareTitle, true);
 
-			// Switch statement to determine which sorting algorithm to apply
-			switch (sortListBox->SelectedIndex)
-			{
-			case 0:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::BubbleTitle, true);
-				break;
-			case 1:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::SelectionTitle, true);
-				break;
-			case 2:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::InsertionTitle, true);
-				break;
-			case 3:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::ShellTitle, true);
-				break;
-			default:
-				sortErrorLabel->Visible = true;
-				break;
-			}
-
-			// Adds sorted list to ListView after clearing current ListView
-			if (sortedList)
-			{
-				libraryDisplayListView->Items->Clear();
-
-				for (int i = 0; i < sortedList->size(); i++)
-				{
-					array<String^>^ subItems = gcnew array<String^>(6);
-					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
-					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
-					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
-					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
-
-					String^ keyString = (*sortedList)[i]->key.ToString();
-
-					subItems[5] = keyString;
-					ListViewItem^ tempLV = gcnew ListViewItem(subItems);
-					libraryDisplayListView->Items->Add(tempLV);
-				}
-
-				// Sets the bookLinkedList pointer to the new sorted list
-				bookLinkedList = sortedList;
-			}
+			// Updates ListView with sorted data
+			UpdateListView();
 		}
 		private: System::Void sortAuthorAscButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
-			// Temporary linked list
-			DoubleLinkedList* sortedList;
+			// Decide on which sorting algorithm to apply
+			DecideSort(Sort::CompareAuthor, false);
 
-			// Switch statement to determine which sorting algorithm to apply
-			switch (sortListBox->SelectedIndex)
-			{
-			case 0:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::BubbleAuthor, false);
-				break;
-			case 1:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::SelectionAuthor, false);
-				break;
-			case 2:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::InsertionAuthor, false);
-				break;
-			case 3:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::ShellAuthor, false);
-				break;
-			default:
-				sortErrorLabel->Visible = true;
-				break;
-			}
-
-			// Adds sorted list to ListView after clearing current ListView
-			if (sortedList)
-			{
-				libraryDisplayListView->Items->Clear();
-
-				for (int i = 0; i < sortedList->size(); i++)
-				{
-					array<String^>^ subItems = gcnew array<String^>(6);
-					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
-					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
-					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
-					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
-
-					String^ keyString = (*sortedList)[i]->key.ToString();
-
-					subItems[5] = keyString;
-					ListViewItem^ tempLV = gcnew ListViewItem(subItems);
-					libraryDisplayListView->Items->Add(tempLV);
-				}
-
-				// Sets the bookLinkedList pointer to the new sorted list
-				bookLinkedList = sortedList;
-			}
+			// Updates ListView with sorted data
+			UpdateListView();
 		}
 		private: System::Void sortAuthorDescButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
-			// Temporary linked list
-			DoubleLinkedList* sortedList;
+			// Decide on which sorting algorithm to apply
+			DecideSort(Sort::CompareAuthor, true);
 
-			// Switch statement to determine which sorting algorithm to apply
-			switch (sortListBox->SelectedIndex)
-			{
-			case 0:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::BubbleAuthor, true);
-				break;
-			case 1:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::SelectionAuthor, true);
-				break;
-			case 2:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::InsertionAuthor, true);
-				break;
-			case 3:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::ShellAuthor, true);
-				break;
-			default:
-				sortErrorLabel->Visible = true;
-				break;
-			}
-
-			// Adds sorted list to ListView after clearing current ListView
-			if (sortedList)
-			{
-				libraryDisplayListView->Items->Clear();
-
-				for (int i = 0; i < sortedList->size(); i++)
-				{
-					array<String^>^ subItems = gcnew array<String^>(6);
-					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
-					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
-					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
-					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
-
-					String^ keyString = (*sortedList)[i]->key.ToString();
-
-					subItems[5] = keyString;
-					ListViewItem^ tempLV = gcnew ListViewItem(subItems);
-					libraryDisplayListView->Items->Add(tempLV);
-				}
-
-				// Sets the bookLinkedList pointer to the new sorted list
-				bookLinkedList = sortedList;
-			}
+			// Updates ListView with sorted data
+			UpdateListView();
 		}
 		private: System::Void sortSeriesAscButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
-			// Temporary linked list
-			DoubleLinkedList* sortedList;
+			// Decide on which sorting algorithm to apply
+			DecideSort(Sort::CompareSeries, false);
 
-			// Switch statement to determine which sorting algorithm to apply
-			switch (sortListBox->SelectedIndex)
-			{
-			case 0:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::BubbleSeries, false);
-				break;
-			case 1:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::SelectionSeries, false);
-				break;
-			case 2:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::InsertionSeries, false);
-				break;
-			case 3:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::ShellSeries, false);
-				break;
-			default:
-				sortErrorLabel->Visible = true;
-				break;
-			}
-
-			// Adds sorted list to ListView after clearing current ListView
-			if (sortedList)
-			{
-				libraryDisplayListView->Items->Clear();
-
-				for (int i = 0; i < sortedList->size(); i++)
-				{
-					array<String^>^ subItems = gcnew array<String^>(6);
-					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
-					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
-					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
-					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
-
-					String^ keyString = (*sortedList)[i]->key.ToString();
-
-					subItems[5] = keyString;
-					ListViewItem^ tempLV = gcnew ListViewItem(subItems);
-					libraryDisplayListView->Items->Add(tempLV);
-				}
-
-				// Sets the bookLinkedList pointer to the new sorted list
-				bookLinkedList = sortedList;
-			}
+			// Updates ListView with sorted data
+			UpdateListView();
 		}
 		private: System::Void sortSeriesDescButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
-			// Temporary linked list
-			DoubleLinkedList* sortedList;
+			// Decide on which sorting algorithm to apply
+			DecideSort(Sort::CompareSeries, true);
 
-			// Switch statement to determine which sorting algorithm to apply
-			switch (sortListBox->SelectedIndex)
-			{
-			case 0:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::BubbleSeries, true);
-				break;
-			case 1:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::SelectionSeries, true);
-				break;
-			case 2:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::InsertionSeries, true);
-				break;
-			case 3:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::ShellSeries, true);
-				break;
-			default:
-				sortErrorLabel->Visible = true;
-				break;
-			}
-
-			// Adds sorted list to ListView after clearing current ListView
-			if (sortedList)
-			{
-				libraryDisplayListView->Items->Clear();
-
-				for (int i = 0; i < sortedList->size(); i++)
-				{
-					array<String^>^ subItems = gcnew array<String^>(6);
-					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
-					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
-					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
-					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
-
-					String^ keyString = (*sortedList)[i]->key.ToString();
-
-					subItems[5] = keyString;
-					ListViewItem^ tempLV = gcnew ListViewItem(subItems);
-					libraryDisplayListView->Items->Add(tempLV);
-				}
-
-				// Sets the bookLinkedList pointer to the new sorted list
-				bookLinkedList = sortedList;
-			}
+			// Updates ListView with sorted data
+			UpdateListView();
 		}
 		private: System::Void sortScoreAscButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
-			// Temporary linked list
-			DoubleLinkedList* sortedList;
+			// Decide on which sorting algorithm to apply
+			DecideSort(Sort::CompareScore, false);
 
-			// Switch statement to determine which sorting algorithm to apply
-			switch (sortListBox->SelectedIndex)
-			{
-			case 0:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::BubbleScore, false);
-				break;
-			case 1:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::SelectionScore, false);
-				break;
-			case 2:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::InsertionScore, false);
-				break;
-			case 3:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::ShellScore, false);
-				break;
-			default:
-				sortErrorLabel->Visible = true;
-				break;
-			}
-
-			// Adds sorted list to ListView after clearing current ListView
-			if (sortedList)
-			{
-				libraryDisplayListView->Items->Clear();
-
-				for (int i = 0; i < sortedList->size(); i++)
-				{
-					array<String^>^ subItems = gcnew array<String^>(6);
-					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
-					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
-					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
-					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
-
-					String^ keyString = (*sortedList)[i]->key.ToString();
-
-					subItems[5] = keyString;
-					ListViewItem^ tempLV = gcnew ListViewItem(subItems);
-					libraryDisplayListView->Items->Add(tempLV);
-				}
-
-				// Sets the bookLinkedList pointer to the new sorted list
-				bookLinkedList = sortedList;
-			}
+			// Updates ListView with sorted data
+			UpdateListView();
 		}
 		private: System::Void sortScoreDescButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
-			// Temporary linked list
-			DoubleLinkedList* sortedList;
+			// Decide on which sorting algorithm to apply
+			DecideSort(Sort::CompareScore, true);
 
-			// Switch statement to determine which sorting algorithm to apply
-			switch (sortListBox->SelectedIndex)
-			{
-			case 0:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::BubbleScore, true);
-				break;
-			case 1:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::SelectionScore, true);
-				break;
-			case 2:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::InsertionScore, true);
-				break;
-			case 3:
-				sortErrorLabel->Visible = false;
-				sortedList = TimeASort(Sort::ShellScore, true);
-				break;
-			default:
-				sortErrorLabel->Visible = true;
-				break;
-			}
-
-			// Adds sorted list to ListView after clearing current ListView
-			if (sortedList)
-			{
-				libraryDisplayListView->Items->Clear();
-
-				for (int i = 0; i < sortedList->size(); i++)
-				{
-					array<String^>^ subItems = gcnew array<String^>(6);
-					subItems[0] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->title);
-					subItems[1] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->author);
-					subItems[2] = msclr::interop::marshal_as<String^>((*sortedList)[i]->data->series);
-					subItems[3] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->volume));
-					subItems[4] = msclr::interop::marshal_as<String^>(std::to_string((*sortedList)[i]->data->score));
-
-					String^ keyString = (*sortedList)[i]->key.ToString();
-
-					subItems[5] = keyString;
-					ListViewItem^ tempLV = gcnew ListViewItem(subItems);
-					libraryDisplayListView->Items->Add(tempLV);
-				}
-
-				// Sets the bookLinkedList pointer to the new sorted list
-				bookLinkedList = sortedList;
-			}
+			// Updates ListView with sorted data
+			UpdateListView();
 		}
 
 		// Exit button "on-click" event handler 

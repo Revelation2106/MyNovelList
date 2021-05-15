@@ -54,6 +54,10 @@ namespace MyNovelList {
 			key = k;
 			data = d;
 		}
+		~Node()
+		{
+			delete data;
+		}
 	};
 
 	class DoubleLinkedList

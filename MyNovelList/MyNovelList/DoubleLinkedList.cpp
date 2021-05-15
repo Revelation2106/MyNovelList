@@ -145,48 +145,41 @@ namespace MyNovelList {
 		if (ptr == nullptr)
 		{
 			// Do nothing as no node exists with key value specified
+			return;
 		}
-		else
+
+		// If the head's key equals the key value k
+		if (head->key == k)
 		{
-			// If the head's key equals the key value k
-			if (head->key == k)
+			// Set head to next
+			if (head->next == nullptr)
 			{
-				// Set head to next
-				if (head->next == nullptr)
-				{
-					head = nullptr;
-					count = 0;
-				}
-				else
-				{
-					head = head->next;
-					head->previous = nullptr;
-				}
+				head = nullptr;
+				count = 0;
 			}
 			else
 			{
-				// Temporary node pointing to the next node
-				Node* nextNode = ptr->next;
-				// Temporary node pointing to the previous node
-				Node* prevNode = ptr->previous;
-
-				// If there is no next node
-				if (nextNode == nullptr)
-				{
-					// Delete k at the end of linked list
-					prevNode->next = nullptr;
-				}
-				else
-				{
-					// K was deleted inbetween nodes
-					prevNode->next = nextNode;
-					nextNode->previous = prevNode;
-				}
+				head = head->next;
+				head->previous = nullptr;
+				count--;
 			}
 
-			// Decrement true key count as node was deleted
-			count--;
+			return;
 		}
+
+		// Temporary node pointing to the next node
+		Node* nextNode = ptr->next;
+		// Temporary node pointing to the previous node
+		Node* prevNode = ptr->previous;
+
+		// K was deleted inbetween nodes
+		prevNode->next = nextNode;
+		nextNode->previous = prevNode;
+
+		// Decrement true key count as node was deleted
+		count--;
+
+		delete ptr;
 	}
 
 	void DoubleLinkedList::updateNodeByKey(int k, Book* d)

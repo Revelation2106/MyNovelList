@@ -2,6 +2,11 @@
 Digital library created for a UWS module.
 
 Change Log 14/05/2021 - Thomas
+- Refactored Sort.h
+- Used 4 lambdas to simplify sort comparisons
+- Fixed bug with deleting nodes
+
+Change Log 14/05/2021 - Thomas
 - Refactored Sort to account for volume number when sorting by 
   author or series
 
