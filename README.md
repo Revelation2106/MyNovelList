@@ -1,6 +1,9 @@
 # MyNovelList
 Digital library created for a UWS module.
 
+Change Log 27/05/2021 - Thomas
+- Fixed bug with deleting node from the end of the list
+
 Change Log 14/05/2021 - Thomas
 - Refactored Sort.h
 - Used 4 lambdas to simplify sort comparisons

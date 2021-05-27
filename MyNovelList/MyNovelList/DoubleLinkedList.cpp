@@ -174,7 +174,10 @@ namespace MyNovelList {
 
 		// K was deleted inbetween nodes
 		prevNode->next = nextNode;
-		nextNode->previous = prevNode;
+
+		// Check if nextNode is null (item was at the tail of the list)
+		if (nextNode != nullptr)
+			nextNode->previous = prevNode;
 
 		// Decrement true key count as node was deleted
 		count--;
