@@ -1255,40 +1255,20 @@ namespace MyNovelList {
 			for (int i = 0; i < bookLinkedList->size(); i++)
 			{
 				// Save information to a C# string
-				String^ outTitle = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->title);
-				String^ outAuthor = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->author);
-				String^ outSeries;
-				// If the series field is blank then add a @ as a placeholder, 
-				// otherwise add the data
-				if (msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->series) == "")
-				{
-				   outSeries = "@";
-				}
-				else
-				{
-				   outSeries = msclr::interop::marshal_as<String^>((*bookLinkedList)[i]->data->series);
-				}
-				String^ outVolume = msclr::interop::marshal_as<String^>(std::to_string((*bookLinkedList)[i]->data->volume));
-				String^ outScore = msclr::interop::marshal_as<String^>(std::to_string((*bookLinkedList)[i]->data->score));
-
-				String^ keyString = (*bookLinkedList)[i]->key.ToString();
-				String^ outKey = keyString;
-
-				// Convert the C# strings to C++ strings
-				std::string outStdTitle = msclr::interop::marshal_as<std::string>(outTitle);
-				std::string outStdAuthor = msclr::interop::marshal_as<std::string>(outAuthor);
-				std::string outStdSeries = msclr::interop::marshal_as<std::string>(outSeries);
-				std::string outStdVolume = msclr::interop::marshal_as<std::string>(outVolume);
-				std::string outStdScore = msclr::interop::marshal_as<std::string>(outScore);
-				std::string outStdKey = msclr::interop::marshal_as<std::string>(outKey);
+				std::string outTitle = (*bookLinkedList)[i]->data->title;
+				std::string outAuthor = (*bookLinkedList)[i]->data->author;
+				std::string outSeries = (*bookLinkedList)[i]->data->series == "" ? "@" : (*bookLinkedList)[i]->data->series;
+				std::string outVolume = std::to_string((*bookLinkedList)[i]->data->volume);
+				std::string outScore = std::to_string((*bookLinkedList)[i]->data->score);
+				std::string outKey = std::to_string((*bookLinkedList)[i]->key);
 
 				// Output the C++ strings to the file
-				outFile << outStdTitle << "\t"
-				   << outStdAuthor << "\t"
-				   << outStdSeries << "\t"
-				   << outStdVolume << "\t"
-				   << outStdScore << "\t"
-				   << outStdKey
+				outFile << outTitle << "\t"
+				   << outAuthor << "\t"
+				   << outSeries << "\t"
+				   << outVolume << "\t"
+				   << outScore << "\t"
+				   << outKey
 				   << std::endl;
 			}
 

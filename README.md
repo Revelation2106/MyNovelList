@@ -8,6 +8,7 @@ Change Log 04/06/2021 - Thomas
   using data from usernameVector before performing decryption
 	- This change should save on memory by exiting the sign-in attempt 
 	  before decrypting if the wrong username is used
+- Refactored exit button on-click handler
 
 Change Log 27/05/2021 - Thomas
 - Fixed bug with deleting node from the end of the list
