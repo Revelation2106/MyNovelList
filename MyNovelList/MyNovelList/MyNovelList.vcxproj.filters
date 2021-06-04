@@ -35,5 +35,8 @@
     <ClInclude Include="Sort.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cryptographer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

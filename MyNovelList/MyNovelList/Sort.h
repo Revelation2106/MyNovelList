@@ -33,17 +33,13 @@ namespace MyNovelList {
 		};
 		static constexpr auto CompareAuthor = [](Node* first, Node* second)
 		{
-			return	first->data->author > second->data->author ||
-					(first->data->author == second->data->author &&
-					first->data->series > second->data->series) ||
-					(first->data->series == second->data->series &&
-					first->data->volume > second->data->volume);
+			return	std::tie(first->data->author, first->data->series, first->data->volume) >
+					std::tie(second->data->author, second->data->series, second->data->volume);
 		};
 		static constexpr auto CompareSeries = [](Node* first, Node* second)
 		{
-			return	first->data->series > second->data->series ||
-					(first->data->series == second->data->series &&
-					first->data->volume > second->data->volume);
+			return	std::tie(first->data->series, first->data->volume) >
+					std::tie(second->data->series, second->data->volume);
 		};
 		static constexpr auto CompareScore = [](Node* first, Node* second)
 		{

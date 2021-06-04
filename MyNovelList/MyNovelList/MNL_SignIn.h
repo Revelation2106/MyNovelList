@@ -42,9 +42,6 @@ namespace MyNovelList {
 	public ref class MNL_SignIn : public System::Windows::Forms::Form
 	{
 	protected:
-		// Bool to track whether a login attempt was successful
-		bool loginSuccessful;
-
 		// Mouse event variables
 		bool isDragging;
 		Point offset;
@@ -81,6 +78,8 @@ namespace MyNovelList {
 			uaPanel->Hide();
 			// Hides the registration panel
 			registerPanel->Hide();
+
+			FillUsernameVector();
 		}
 
 	protected:
@@ -587,85 +586,78 @@ namespace MyNovelList {
 		}
 #pragma endregion
 
+		void FillUsernameVector()
+		{
+			// Decrypt user data
+			std::stringstream decOut = DecryptFromFile("UP.dat");
+
+			// Temporary strings
+			std::string userTemp;
+
+			// Add all usernames in file to usernameVector
+			while (std::getline(decOut, userTemp, '\t'))
+			{
+				// Ignore the passwords
+				decOut.ignore(256, '\n');
+				// Erase any \n characters
+				userTemp.erase(std::remove_if(userTemp.begin(), userTemp.end(), isNewLine), userTemp.end());
+				// If the string is empty then break
+				if (userTemp.empty())
+					break;
+
+				// Add the username to the usernameVector
+				usernameVector.emplace_back(userTemp);
+			}
+		}
+
 		// "On-click" event for the sign-in button
 		private: System::Void signInButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
-			// Decrypt user data
-			char c;
-			std::ifstream decIn;
-			std::ofstream decOut;
+			// Convert the user's attempt to an std::string
+			std::string usernameAttempt = msclr::interop::marshal_as<std::string>(usernameTextBox->Text);
 
-			decIn.open("UP.dat", std::ios::binary);
-			decOut.open("UP_rawData.dat", std::ios::binary);
-			// Check if the file is empty
-			bool empty = (decIn.get(), decIn.eof());
-			// If not empty, read and decrypt data
-			if (!empty)
+			// Try to find the username attempt in the usernameVector
+			auto it = std::find(usernameVector.begin(), usernameVector.end(), usernameAttempt);
+
+			// If no username is found
+			if (it == usernameVector.end())
 			{
-				decIn.clear();
-				decIn.seekg(0);
-
-				while (decIn)
-				{
-					decIn >> std::skipws >> c;
-					int temp = c - 42;
-					decOut << (char)temp;
-				}
+				// Display error message that the username or password is wrong
+				incorrectDetailsLabel->Visible = true;
+				return;
 			}
-			decIn.close();
-			decOut.close();
+
+			// Decrypt user data
+			std::stringstream decOut = DecryptFromFile("UP.dat");
 
 			// Temporary strings
 			std::string userTemp, passTemp;
-			// In filestream to the designated filepath
-			std::ifstream in("UP_rawData.dat");
 
-			// While the file is open
-			while (in)
+			// While there is data in the file
+			while (std::getline(decOut, userTemp, '\t'), std::getline(decOut, passTemp))
 			{
-				// If the filestream can get a line, set userTemp and passTemp to the associated text
-				if (std::getline(in, userTemp, '\t'), std::getline(in, passTemp))
+				userTemp.erase(std::remove_if(userTemp.begin(), userTemp.end(), isNewLine), userTemp.end());
+				// If the text in the username and password text boxes match the temporary variables
+				if (msclr::interop::marshal_as<std::string>(usernameTextBox->Text) == userTemp &&
+					msclr::interop::marshal_as<std::string>(passwordTextBox->Text) == passTemp)
 				{
-					userTemp.erase(std::remove_if(userTemp.begin(), userTemp.end(), isNewLine), userTemp.end());
-					// If the text in the username and password text boxes match the temporary variables
-					if (msclr::interop::marshal_as<std::string>(usernameTextBox->Text) == userTemp &&
-						msclr::interop::marshal_as<std::string>(passwordTextBox->Text) == passTemp)
-					{
-						// Allow login by setting the bool to true
-						loginSuccessful = true;
-						// Note the name of the successful user
-						successfulUsername = msclr::interop::marshal_as<std::string>(usernameTextBox->Text);
-						break;
-					}
+					// Note the name of the successful user
+					successfulUsername = msclr::interop::marshal_as<std::string>(usernameTextBox->Text);
+
+					incorrectDetailsLabel->Visible = false;
+
+					// Hide the current window
+					this->Hide();
+					// Create an instance of the home screen
+					MNL_Home^ home = gcnew MNL_Home(successfulUsername);
+					// Display it as a dialogue box (must be done as only one Windows Form program can be active
+					// at one time and closing the current window would shut down the program)
+					home->ShowDialog();
 				}
 			}
 
-			// Close the file
-			in.close();
-
-			// Delete non-encrypted file
-			std::filesystem::remove("UP_rawData.dat");
-
-			// If raw data is correct for both fields then allow access
-			if (loginSuccessful)
-			{
-				incorrectDetailsLabel->Visible = false;
-				// Hide the current window
-				this->Hide();
-				// Create an instance of the home screen
-				MNL_Home^ home = gcnew MNL_Home(successfulUsername);
-				// Display it as a dialogue box (must be done as only one Windows Form program can be active
-				// at one time and closing the current window would shut down the program)
-				home->ShowDialog();
-				// Close the current window after the new window is opened
-				this->Close();
-			}
-			else
-			{
-				// Display error message if the username or password is wrong
-				incorrectDetailsLabel->Visible = true;
-				loginSuccessful = false;
-			}
+			// Display error message if the username or password is wrong
+			incorrectDetailsLabel->Visible = true;
 		}
 
 		// "On-click" event for the exit button
@@ -736,100 +728,52 @@ namespace MyNovelList {
 		// "On-click" event for the register user button
 		private: System::Void registerButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
-			bool usernameExists = false;
-
 			//If username and password fields have data then write it to a .dat file
-			if (registerUserTextBox->Text != "" && registerPassTextBox->Text != "")
-			{
-				// Check text in text field against every existing username
-				for (int i = 0; i < usernameVector.size(); i++)
-				{
-					// Convert std::string to C# String^
-					String^ temp = msclr::interop::marshal_as<String^>(usernameVector[i]);
-					// If a match is confirmed, display a username already exists error
-					if (registerUserTextBox->Text == temp)
-					{
-						registerSameUsernameLabel->Visible = true;
-						usernameExists = true;
-					}
-				}
-
-				// If username doesn't exist, proceed with registration
-				if (!usernameExists)
-				{
-					// Convert C# String to std::string and add to vector list of usernames
-					std::string temp = msclr::interop::marshal_as<std::string>(registerUserTextBox->Text);
-					usernameVector.emplace_back(temp);
-					registerNoTextLabel->Visible = false;
-
-					// Decrypt user data
-					char c;
-					std::ifstream decIn;
-					std::ofstream decOut;
-
-					decIn.open("UP.dat", std::ios::binary);
-					decOut.open("UP_rawData.dat", std::ios::binary);
-					// Check if the file is empty
-					bool empty = (decIn.get(), decIn.eof());
-					// If not empty, read and decrypt data
-					if (!empty)
-					{
-						decIn.clear();
-						decIn.seekg(0);
-
-						while (decIn)
-						{
-							decIn >> std::skipws >> c;
-							int temp = c - 42;
-							decOut << (char)temp;
-						}
-					}
-					decIn.close();
-					decOut.close();
-
-					std::ofstream outFile;
-					//std::stringstream outFile;
-					// Open an out filestream
-					outFile.open("UP_rawData.dat", std::fstream::app);
-					// Write the contents of the username and password box to the file
-					outFile << msclr::interop::marshal_as<std::string>(registerUserTextBox->Text) << '\t' << msclr::interop::marshal_as<std::string>(registerPassTextBox->Text) << '\n';
-					// Close the file
-					outFile.close();
-
-					// Encrypt user data
-					decIn.open("UP_rawData.dat", std::ios::binary);
-					decOut.open("UP.dat", std::ios::binary);
-
-					while (decIn)
-					{
-						decIn >> std::noskipws >> c;
-						int temp = c + 42;
-						decOut << (char)temp;
-					}
-
-					decIn.close();
-					decOut.close();
-
-					// Delete the 
-					std::filesystem::remove("UP_rawData.dat");
-
-					// Clear the text boxes
-					registerUserTextBox->Clear();
-					registerPassTextBox->Clear();
-
-					// Hide the registration panel
-					registerPanel->Hide();
-					registerPanel->SendToBack();
-				}
-			}
-			else
+			if (registerUserTextBox->Text == "" && registerPassTextBox->Text == "")
 			{
 				// Clear registration username and password fields
 				registerUserTextBox->Clear();
 				registerPassTextBox->Clear();
 				// Display an error if one of the text fields is empty
 				registerNoTextLabel->Visible = true;
+				return;
 			}
+
+			// Check text in text field against every existing username
+			for (int i = 0; i < usernameVector.size(); i++)
+			{
+				// Convert std::string to C# String^
+				String^ temp = msclr::interop::marshal_as<String^>(usernameVector[i]);
+				// If a match is confirmed, display a username already exists error
+				if (registerUserTextBox->Text == temp)
+				{
+					registerSameUsernameLabel->Visible = true;
+					return;
+				}
+			}
+
+			// Convert C# String to std::string and add to vector list of usernames
+			std::string temp = msclr::interop::marshal_as<std::string>(registerUserTextBox->Text);
+			usernameVector.emplace_back(temp);
+			registerNoTextLabel->Visible = false;
+
+			// Decrypt user data
+			std::stringstream decOut = DecryptFromFile("UP.dat");
+
+			// Write the contents of the username and password box to the file
+			decOut << msclr::interop::marshal_as<std::string>(registerUserTextBox->Text) << '\t' << 
+					  msclr::interop::marshal_as<std::string>(registerPassTextBox->Text) << '\n';
+
+			// Encrypt user data
+			EncryptToFile(decOut, "UP.dat");
+
+			// Clear the text boxes
+			registerUserTextBox->Clear();
+			registerPassTextBox->Clear();
+
+			// Hide the registration panel
+			registerPanel->Hide();
+			registerPanel->SendToBack();
 		}
 
 		// "On-click" event for the create account label

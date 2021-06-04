@@ -15,6 +15,7 @@ I am aware of the penalties incurred by submitting in full or in part work that 
 #include "MNL_SignIn.h"
 #include "DoubleLinkedList.h"
 #include "Sort.h"
+#include "Cryptographer.h"
 
 #include <chrono>
 #include <iostream>
@@ -34,7 +35,6 @@ namespace MyNovelList {
 	using namespace System::Drawing;
 
 	// Global variable used to create user data file based on whoever logs in
-	std::string filename;
 	std::string eFilename;
 	std::string inFilename;
 
@@ -99,100 +99,67 @@ namespace MyNovelList {
 		{
 			InitializeComponent();
 
-			filename = username + "_rawData.dat";
-			eFilename = username + "_data.dat";
-			std::string title, author, series, volume, score, inKey, keyAccumString;
-		
-			// Decrypt user data
-			char c;
-			std::ifstream decIn;
-			std::ofstream decOut;
-
-			decIn.open(eFilename.c_str(), std::ios::binary);
-			decOut.open(filename.c_str(), std::ios::binary);
-			// Check if the file is empty
-			bool empty = (decIn.get(), decIn.eof());
-			// If not empty, read and decrypt data
-			if (!empty)
-			{
-				decIn.clear();
-				decIn.seekg(0);
-
-				while (decIn)
-				{
-					decIn >> std::noskipws >> c;
-					int temp = c - 42;
-					decOut << (char)temp;
-				}
-			}
-			decIn.close();
-			decOut.close();
-
-			// Read decrypted data
-			std::ifstream in(filename);
-
-			if (in.is_open())
-			{
-				//First line of file is always the key accumulator
-				std::getline(in, keyAccumString);
-
-				if (!keyAccumString.empty())
-				{
-					keyAccum = std::stoi(keyAccumString);
-				}
-				//Reads to the end of the file and parses data
-				while (std::getline(in, title, '\t'), std::getline(in, author, '\t'), 
-					   std::getline(in, series, '\t'), std::getline(in, volume, '\t'), 
-					   std::getline(in, score, '\t'), std::getline(in, inKey))
-				{
-					//Create node with unique key
-					Node* temp = new Node();
-					temp->key = std::stoi(inKey);
-					String^ tempKey = temp->key.ToString();
-
-					//Creates book, taking info from text boxes
-					Book* b = new Book();
-					b->title = title;
-					b->author = author;
-
-					if (series == "@")
-					{
-						b->isSeries = false;
-						b->series = "";
-					}
-					else
-					{
-						b->series = series;
-					}
-
-					b->volume = std::stoi(volume);
-					b->score = std::stoi(score);
-
-					//Adds book to linked list
-					temp->data = b;
-					bookLinkedList->appendNode(temp);
-
-					//Add to ListView
-					array<String^>^ subItems = gcnew array<String^>(6);
-					subItems[0] = msclr::interop::marshal_as<String^>(b->title);
-					subItems[1] = msclr::interop::marshal_as<String^>(b->author);
-					subItems[2] = msclr::interop::marshal_as<String^>(b->series);
-					subItems[3] = msclr::interop::marshal_as<String^>(volume);
-					subItems[4] = msclr::interop::marshal_as<String^>(score);
-					subItems[5] = tempKey;
-					ListViewItem^ tempLV = gcnew ListViewItem(subItems);
-					libraryDisplayListView->Items->Add(tempLV);
-				}
-
-				//Close user data file
-				in.close();
-			}
-
-			// Delete decrypted file
-			std::filesystem::remove(filename);
-
 			// Set default sort
 			sortListBox->SelectedIndex = 0;
+
+			eFilename = username + "_data.dat";
+
+			// Decrypt user data
+			std::stringstream decOut = DecryptFromFile(eFilename);
+
+			if (decOut.tellp() == std::streampos(0))
+				return;
+
+			std::string title, author, series, volume, score, inKey, keyAccumString;
+
+			// Read decrypted data
+			// First line of file is always the key accumulator
+			std::getline(decOut, keyAccumString);
+			keyAccum = std::stoi(keyAccumString);
+
+			// Reads to the end of the file and parses data
+			while (std::getline(decOut, title, '\t'), std::getline(decOut, author, '\t'),
+				   std::getline(decOut, series, '\t'), std::getline(decOut, volume, '\t'),
+				   std::getline(decOut, score, '\t'), std::getline(decOut, inKey))
+			{
+				// Create node with unique key
+				Node* temp = new Node();
+				temp->key = std::stoi(inKey);
+				String^ tempKey = temp->key.ToString();
+
+				// Creates book, taking info from text boxes
+				Book* b = new Book();
+				b->title = title;
+				b->author = author;
+
+				if (series == "@")
+				{
+					b->isSeries = false;
+					b->series = "";
+				}
+				else
+				{
+					b->series = series;
+				}
+
+				b->volume = std::stoi(volume);
+				b->score = std::stoi(score);
+
+				// Adds book to linked list
+				temp->data = b;
+				bookLinkedList->appendNode(temp);
+
+				// Add to ListView
+				array<String^>^ subItems = gcnew array<String^>(6);
+				subItems[0] = msclr::interop::marshal_as<String^>(b->title);
+				subItems[1] = msclr::interop::marshal_as<String^>(b->author);
+				subItems[2] = msclr::interop::marshal_as<String^>(b->series);
+				subItems[3] = msclr::interop::marshal_as<String^>(volume);
+				subItems[4] = msclr::interop::marshal_as<String^>(score);
+				subItems[5] = tempKey;
+				ListViewItem^ tempLV = gcnew ListViewItem(subItems);
+				libraryDisplayListView->Items->Add(tempLV);
+			}
 		}
 
 	protected:
@@ -1281,8 +1248,7 @@ namespace MyNovelList {
 		private: System::Void exitButton_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			// Open out filestream to save user book data
-			std::ofstream outFile;
-			outFile.open(filename, std::ofstream::out | std::fstream::trunc);
+			std::stringstream outFile;
 			outFile << keyAccum << "\n";
 
 			// For each node in the linked list
@@ -1326,29 +1292,7 @@ namespace MyNovelList {
 				   << std::endl;
 			}
 
-			// Close the file
-			outFile.close();
-
-			// Encrypt user data
-			char c;
-			std::ifstream decIn;
-			std::ofstream decOut;
-
-			decIn.open(filename, std::ios::binary);
-			decOut.open(eFilename, std::ios::binary);
-
-			while (decIn)
-			{
-				decIn >> std::noskipws >> c;
-				int temp = c + 42;
-				decOut << (char)temp;
-			}
-
-			decIn.close();
-			decOut.close();
-
-			// Delete non-encrypted file
-			std::filesystem::remove(filename);
+			EncryptToFile(outFile, eFilename);
 
 			// Restart the application to allow the user to log in again if they wish
 			Application::Restart();

@@ -135,6 +135,7 @@
     <ClCompile Include="MNL_SignIn.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Cryptographer.h" />
     <ClInclude Include="DoubleLinkedList.h" />
     <ClInclude Include="MNL_Home.h">
       <FileType>CppForm</FileType>
