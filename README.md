@@ -1,6 +1,10 @@
 # MyNovelList
 Digital library created for a UWS module.
 
+Change Log 05/06/2021 - Thomas
+- Refactored sign-in to remove leading and trailing whitespace 
+  from usernames. Passwords may still contain spaces wherever
+
 Change Log 04/06/2021 - Thomas
 - Refactored encryption and decryption into associated functions
 - Refactored MNL_Home and MNL_SignIn to accomodate these changes

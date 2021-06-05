@@ -725,6 +725,21 @@ namespace MyNovelList {
 			isDragging = false;
 		}
 
+		// Removes leading and trailing whitespace from text
+		std::string TrimWhitespace(const std::string text)
+		{
+			const auto stringBegin = text.find_first_not_of(" ");
+
+			// If text is empty, exit early
+			if (stringBegin == std::string::npos)
+				return "";
+
+			const auto stringEnd = text.find_last_not_of(" ");
+			const auto stringRange = (stringEnd - stringBegin) + 1;
+
+			return text.substr(stringBegin, stringRange);
+		}
+
 		// "On-click" event for the register user button
 		private: System::Void registerButton_Click(System::Object^ sender, System::EventArgs^ e) 
 		{
@@ -752,8 +767,10 @@ namespace MyNovelList {
 				}
 			}
 
-			// Convert C# String to std::string and add to vector list of usernames
-			std::string temp = msclr::interop::marshal_as<std::string>(registerUserTextBox->Text);
+			// Convert C# String to std::string and remove leading and trailing whitespace
+			std::string temp = TrimWhitespace(msclr::interop::marshal_as<std::string>(registerUserTextBox->Text));
+
+			// Add to vector list of usernames
 			usernameVector.emplace_back(temp);
 			registerNoTextLabel->Visible = false;
 
@@ -761,7 +778,7 @@ namespace MyNovelList {
 			std::stringstream decOut = DecryptFromFile("UP.dat");
 
 			// Write the contents of the username and password box to the file
-			decOut << msclr::interop::marshal_as<std::string>(registerUserTextBox->Text) << '\t' << 
+			decOut << temp << '\t' << 
 					  msclr::interop::marshal_as<std::string>(registerPassTextBox->Text) << '\n';
 
 			// Encrypt user data
