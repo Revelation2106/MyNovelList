@@ -46,26 +46,26 @@ namespace MyNovelList {
 		bool isDragging;
 		Point offset;
 
-	// Windows Forms generated declarations
-	private: System::Windows::Forms::Label^ copyLabel;
-	private: System::Windows::Forms::Label^ mnlLabel;
-	private: System::Windows::Forms::Label^ incorrectDetailsLabel;
-	private: System::Windows::Forms::Label^ createAccountLabel;
-	private: System::Windows::Forms::Label^ accountLabel;
-	private: System::Windows::Forms::Panel^ registerPanel;
-	private: System::Windows::Forms::TextBox^ registerPassTextBox;
-	private: System::Windows::Forms::Label^ registerPassLabel;
-	private: System::Windows::Forms::TextBox^ registerUserTextBox;
-	private: System::Windows::Forms::Label^ registerUserLabel;
-	private: System::Windows::Forms::Button^ registerButton;
-	private: System::Windows::Forms::Panel^ uaPanel;
-	private: System::Windows::Forms::TextBox^ uaTextBox;
-	private: System::Windows::Forms::Button^ uaButton;
-	private: System::Windows::Forms::Label^ uaLabelHeading;
-	private: System::Windows::Forms::Label^ registerNoTextLabel;
-	private: System::Windows::Forms::Label^ registerSameUsernameLabel;
-	private: System::Windows::Forms::Button^ registerCancelButton;
-	private: System::Windows::Forms::Label^ registerLabel;
+		// Windows Forms generated declarations
+		private: System::Windows::Forms::Label^ copyLabel;
+		private: System::Windows::Forms::Label^ mnlLabel;
+		private: System::Windows::Forms::Label^ incorrectDetailsLabel;
+		private: System::Windows::Forms::Label^ createAccountLabel;
+		private: System::Windows::Forms::Label^ accountLabel;
+		private: System::Windows::Forms::Panel^ registerPanel;
+		private: System::Windows::Forms::TextBox^ registerPassTextBox;
+		private: System::Windows::Forms::Label^ registerPassLabel;
+		private: System::Windows::Forms::TextBox^ registerUserTextBox;
+		private: System::Windows::Forms::Label^ registerUserLabel;
+		private: System::Windows::Forms::Button^ registerButton;
+		private: System::Windows::Forms::Panel^ uaPanel;
+		private: System::Windows::Forms::TextBox^ uaTextBox;
+		private: System::Windows::Forms::Button^ uaButton;
+		private: System::Windows::Forms::Label^ uaLabelHeading;
+		private: System::Windows::Forms::Label^ registerNoTextLabel;
+		private: System::Windows::Forms::Label^ registerSameUsernameLabel;
+		private: System::Windows::Forms::Button^ registerCancelButton;
+		private: System::Windows::Forms::Label^ registerLabel;
 
 	public:
 		// Default constructor.
@@ -95,22 +95,22 @@ namespace MyNovelList {
 			}
 		}
 
-	// Windows Forms generated declarations
-	private: System::Windows::Forms::Label^ signInLabel;
-	private: System::Windows::Forms::Label^ usernameLabel;
-	private: System::Windows::Forms::TextBox^ usernameTextBox;
-	private: System::Windows::Forms::TextBox^ passwordTextBox;
-	private: System::Windows::Forms::Label^ passwordLabel;
-	private: System::Windows::Forms::Button^ signInButton;
-	private: System::Windows::Forms::Button^ exitButton;
-	private: System::Windows::Forms::CheckBox^ uaCheckBox;
-	private: System::Windows::Forms::Label^ uaLabel;
+		// Windows Forms generated declarations
+		private: System::Windows::Forms::Label^ signInLabel;
+		private: System::Windows::Forms::Label^ usernameLabel;
+		private: System::Windows::Forms::TextBox^ usernameTextBox;
+		private: System::Windows::Forms::TextBox^ passwordTextBox;
+		private: System::Windows::Forms::Label^ passwordLabel;
+		private: System::Windows::Forms::Button^ signInButton;
+		private: System::Windows::Forms::Button^ exitButton;
+		private: System::Windows::Forms::CheckBox^ uaCheckBox;
+		private: System::Windows::Forms::Label^ uaLabel;
 
 	private:
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -567,8 +567,8 @@ namespace MyNovelList {
 			this->Controls->Add(this->usernameTextBox);
 			this->Controls->Add(this->usernameLabel);
 			this->Controls->Add(this->signInLabel);
-			this->Controls->Add(this->uaPanel);
 			this->Controls->Add(this->registerPanel);
+			this->Controls->Add(this->uaPanel);
 			this->DoubleBuffered = true;
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
 			this->Name = L"MNL_SignIn";
@@ -583,6 +583,7 @@ namespace MyNovelList {
 			this->uaPanel->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
+
 		}
 #pragma endregion
 
@@ -611,137 +612,137 @@ namespace MyNovelList {
 		}
 
 		// "On-click" event for the sign-in button
-		private: System::Void signInButton_Click(System::Object^ sender, System::EventArgs^ e) 
+		private: System::Void signInButton_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		// Convert the user's attempt to an std::string
+		std::string usernameAttempt = msclr::interop::marshal_as<std::string>(usernameTextBox->Text);
+
+		// Try to find the username attempt in the usernameVector
+		auto it = std::find(usernameVector.begin(), usernameVector.end(), usernameAttempt);
+
+		// If no username is found
+		if (it == usernameVector.end())
 		{
-			// Convert the user's attempt to an std::string
-			std::string usernameAttempt = msclr::interop::marshal_as<std::string>(usernameTextBox->Text);
-
-			// Try to find the username attempt in the usernameVector
-			auto it = std::find(usernameVector.begin(), usernameVector.end(), usernameAttempt);
-
-			// If no username is found
-			if (it == usernameVector.end())
-			{
-				// Display error message that the username or password is wrong
-				incorrectDetailsLabel->Visible = true;
-				return;
-			}
-
-			// Decrypt user data
-			std::stringstream decOut = DecryptFromFile("UP.dat");
-
-			// Temporary strings
-			std::string userTemp, passTemp;
-
-			// While there is data in the file
-			while (std::getline(decOut, userTemp, '\t'), std::getline(decOut, passTemp))
-			{
-				userTemp.erase(std::remove_if(userTemp.begin(), userTemp.end(), isNewLine), userTemp.end());
-				// If the text in the username and password text boxes match the temporary variables
-				if (msclr::interop::marshal_as<std::string>(usernameTextBox->Text) == userTemp &&
-					msclr::interop::marshal_as<std::string>(passwordTextBox->Text) == passTemp)
-				{
-					// Note the name of the successful user
-					successfulUsername = msclr::interop::marshal_as<std::string>(usernameTextBox->Text);
-
-					incorrectDetailsLabel->Visible = false;
-
-					// Hide the current window
-					this->Hide();
-					// Create an instance of the home screen
-					MNL_Home^ home = gcnew MNL_Home(successfulUsername);
-					// Display it as a dialogue box (must be done as only one Windows Form program can be active
-					// at one time and closing the current window would shut down the program)
-					home->ShowDialog();
-				}
-			}
-
-			// Display error message if the username or password is wrong
+			// Display error message that the username or password is wrong
 			incorrectDetailsLabel->Visible = true;
+			return;
 		}
 
+		// Decrypt user data
+		std::stringstream decOut = DecryptFromFile("UP.dat");
+
+		// Temporary strings
+		std::string userTemp, passTemp;
+
+		// While there is data in the file
+		while (std::getline(decOut, userTemp, '\t'), std::getline(decOut, passTemp))
+		{
+			userTemp.erase(std::remove_if(userTemp.begin(), userTemp.end(), isNewLine), userTemp.end());
+			// If the text in the username and password text boxes match the temporary variables
+			if (msclr::interop::marshal_as<std::string>(usernameTextBox->Text) == userTemp &&
+				msclr::interop::marshal_as<std::string>(passwordTextBox->Text) == passTemp)
+			{
+				// Note the name of the successful user
+				successfulUsername = msclr::interop::marshal_as<std::string>(usernameTextBox->Text);
+
+				incorrectDetailsLabel->Visible = false;
+
+				// Hide the current window
+				this->Hide();
+				// Create an instance of the home screen
+				MNL_Home^ home = gcnew MNL_Home(successfulUsername);
+				// Display it as a dialogue box (must be done as only one Windows Form program can be active
+				// at one time and closing the current window would shut down the program)
+				home->ShowDialog();
+			}
+		}
+
+		// Display error message if the username or password is wrong
+		incorrectDetailsLabel->Visible = true;
+	}
+
 		// "On-click" event for the exit button
-		private: System::Void exitButton_Click(System::Object^ sender, System::EventArgs^ e) 
+		private: System::Void exitButton_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			Application::Exit();
 		}
 
 		// "Check changed" event for the user agreement checkbox
-		private: System::Void uaCheckBox_CheckedChanged(System::Object^ sender, System::EventArgs^ e) 
+		private: System::Void uaCheckBox_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
+	{
+		// If the user has agreed to the user agreement
+		if (uaCheckBox->Checked)
 		{
-			// If the user has agreed to the user agreement
-			if (uaCheckBox->Checked)
-			{
-				// Enable the sign-in button
-				signInButton->Enabled = true;
-			}
-			else
-			{
-				// Disable the button
-				signInButton->Enabled = false;
-			}
+			// Enable the sign-in button
+			signInButton->Enabled = true;
 		}
+		else
+		{
+			// Disable the button
+			signInButton->Enabled = false;
+		}
+	}
 
 		// "On-click" event for the user agreement panel's ok button
-		private: System::Void uaButton_Click(System::Object^ sender, System::EventArgs^ e) 
-		{
-			// Hide the user agreement panel
-			uaPanel->SendToBack();
-			uaPanel->Hide();
-		}
+		private: System::Void uaButton_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		// Hide the user agreement panel
+		uaPanel->SendToBack();
+		uaPanel->Hide();
+	}
 
 		// "On-click" event for the user agreement label
-		private: System::Void uaLabel_Click(System::Object^ sender, System::EventArgs^ e) 
-		{
-			// Displays the user agreement panel
-			uaPanel->BringToFront();
-			uaPanel->Show();
+		private: System::Void uaLabel_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		// Displays the user agreement panel
+		uaPanel->BringToFront();
+		uaPanel->Show();
 
-			// Hide incorrect details label
-			incorrectDetailsLabel->Visible = false;
-		}
+		// Hide incorrect details label
+		incorrectDetailsLabel->Visible = false;
+	}
 
 		// Allows user to drag around the application window through various mouse events
-		private: System::Void MNL_SignIn_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
+		private: System::Void MNL_SignIn_MouseDown(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)
+	{
+		// Enable dragging and set the offset to the mouse's position
+		isDragging = true;
+		offset.X = e->X;
+		offset.Y = e->Y;
+	}
+		private: System::Void MNL_SignIn_MouseMove(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)
+	{
+		// If the user is dragging their mouse
+		if (isDragging)
 		{
-			// Enable dragging and set the offset to the mouse's position
-			isDragging = true;
-			offset.X = e->X;
-			offset.Y = e->Y;
+			// Move the screen to that point minus the mouse offset
+			Point currentScreenPos = PointToScreen(Point(e->X, e->Y));
+			Location = Point(currentScreenPos.X - offset.X, currentScreenPos.Y - offset.Y);
 		}
-		private: System::Void MNL_SignIn_MouseMove(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
-		{
-			// If the user is dragging their mouse
-			if (isDragging)
-			{
-				// Move the screen to that point minus the mouse offset
-				Point currentScreenPos = PointToScreen(Point(e->X, e->Y));
-				Location = Point(currentScreenPos.X - offset.X, currentScreenPos.Y - offset.Y);
-			}
-		}
-		private: System::Void MNL_SignIn_MouseUp(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) 
-		{
-			// Set dragging to false
-			isDragging = false;
-		}
+	}
+		private: System::Void MNL_SignIn_MouseUp(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e)
+	{
+		// Set dragging to false
+		isDragging = false;
+	}
 
 		// Removes leading and trailing whitespace from text
 		std::string TrimWhitespace(const std::string text)
 		{
-			const auto stringBegin = text.find_first_not_of(" ");
+		  const auto stringBegin = text.find_first_not_of(" ");
 
-			// If text is empty, exit early
-			if (stringBegin == std::string::npos)
-				return "";
+		  // If text is empty, exit early
+		  if (stringBegin == std::string::npos)
+		   return "";
 
-			const auto stringEnd = text.find_last_not_of(" ");
-			const auto stringRange = (stringEnd - stringBegin) + 1;
+		  const auto stringEnd = text.find_last_not_of(" ");
+		  const auto stringRange = (stringEnd - stringBegin) + 1;
 
-			return text.substr(stringBegin, stringRange);
+		  return text.substr(stringBegin, stringRange);
 		}
 
 		// "On-click" event for the register user button
-		private: System::Void registerButton_Click(System::Object^ sender, System::EventArgs^ e) 
+		private: System::Void registerButton_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			//If username and password fields have data then write it to a .dat file
 			if (registerUserTextBox->Text == "" && registerPassTextBox->Text == "")
@@ -778,8 +779,8 @@ namespace MyNovelList {
 			std::stringstream decOut = DecryptFromFile("UP.dat");
 
 			// Write the contents of the username and password box to the file
-			decOut << temp << '\t' << 
-					  msclr::interop::marshal_as<std::string>(registerPassTextBox->Text) << '\n';
+			decOut << temp << '\t' <<
+				msclr::interop::marshal_as<std::string>(registerPassTextBox->Text) << '\n';
 
 			// Encrypt user data
 			EncryptToFile(decOut, "UP.dat");
@@ -794,7 +795,7 @@ namespace MyNovelList {
 		}
 
 		// "On-click" event for the create account label
-		private: System::Void createAccountLabel_Click(System::Object^ sender, System::EventArgs^ e) 
+		private: System::Void createAccountLabel_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			// Clear sign-in username and password fields
 			usernameTextBox->Clear();
@@ -808,7 +809,7 @@ namespace MyNovelList {
 		}
 
 		// "On-click" event for the cancel registration button
-		private: System::Void registerCancelButton_Click(System::Object^ sender, System::EventArgs^ e) 
+		private: System::Void registerCancelButton_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			// Clear registration username and password fields
 			registerUserTextBox->Clear();

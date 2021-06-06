@@ -51,7 +51,7 @@ namespace MyNovelList {
 				{
 					ptr = ptr->next;
 				}
-			
+
 				// Append node and set previous pointer
 				ptr->next = n;
 				n->previous = ptr;
@@ -219,14 +219,14 @@ namespace MyNovelList {
 		return temp;
 	}
 
-	int DoubleLinkedList::areTheyNeighbours(Node* A, Node* B) 
+	int DoubleLinkedList::areTheyNeighbours(Node* A, Node* B)
 	{
 		// Returns 1 if A->next equals B and B->previous equals A,
 		// or if A->previous equals B and B->next equals A
 		return (A->next == B && B->previous == A) || (A->previous == B && B->next == A);
 	}
 
-	void DoubleLinkedList::refreshOuterPointers(Node* A) 
+	void DoubleLinkedList::refreshOuterPointers(Node* A)
 	{
 		// If A has a previous node, set its next node to A
 		if (A->previous != nullptr)
@@ -237,7 +237,7 @@ namespace MyNovelList {
 			A->next->previous = A;
 	}
 
-	void DoubleLinkedList::swap(Node* A, Node* B) 
+	void DoubleLinkedList::swap(Node* A, Node* B)
 	{
 		// Temporary array of nodes used for determining neighbours
 		Node* swapperVector[4];
@@ -267,7 +267,7 @@ namespace MyNovelList {
 		swapperVector[3] = B->next;
 
 		// Check if A and B are neighbours 
-		if (areTheyNeighbours(A, B)) 
+		if (areTheyNeighbours(A, B))
 		{
 			// Update nodes appropriately
 			A->previous = swapperVector[2];
@@ -275,7 +275,7 @@ namespace MyNovelList {
 			A->next = swapperVector[3];
 			B->next = swapperVector[1];
 		}
-		else 
+		else
 		{
 			// Update nodes appropriately
 			A->previous = swapperVector[1];

@@ -25,14 +25,14 @@ namespace MyNovelList {
 	{
 		std::string title;
 		std::string author;
-		bool isSeries;
-		std::string series;
-		int volume;
+		bool isSeries = false;
+		std::string series = "";
+		int volume = 1;
 		int score;
 	};
 
 	// Node class used in the doubly linked list.
-	class Node 
+	class Node
 	{
 	public:
 		int key;
@@ -42,7 +42,7 @@ namespace MyNovelList {
 
 	public:
 		// Default constructor.
-		Node() = default;		
+		Node() = default;
 
 		/// <summary>
 		/// Constructor.
