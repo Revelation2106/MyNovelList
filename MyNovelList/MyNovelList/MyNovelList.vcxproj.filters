@@ -38,5 +38,16 @@
     <ClInclude Include="Cryptographer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DB_Panel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="uaPanel.BackgroundImage.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="registerPanel.BackgroundImage1.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

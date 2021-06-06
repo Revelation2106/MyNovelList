@@ -1,6 +1,12 @@
 # MyNovelList
 Digital library created for a UWS module.
 
+Change Log 06/06/2021 - Thomas
+- WORK IN PROGRESS - NOT FULLY TESTED
+- Refactored MNL_SignIn to replace panels with custom ones
+	- This allows double buffering to be enabled which stops the 
+	  flickering when showing/hiding panels
+
 Change Log 05/06/2021 - Thomas
 - Refactored sign-in to remove leading and trailing whitespace 
   from usernames. Passwords may still contain spaces wherever

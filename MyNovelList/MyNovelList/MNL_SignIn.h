@@ -13,6 +13,7 @@ I am aware of the penalties incurred by submitting in full or in part work that 
 */
 
 #include "MNL_Home.h"
+#include "DB_Panel.h"
 
 #include <fstream>
 #include <string>
@@ -52,13 +53,13 @@ namespace MyNovelList {
 		private: System::Windows::Forms::Label^ incorrectDetailsLabel;
 		private: System::Windows::Forms::Label^ createAccountLabel;
 		private: System::Windows::Forms::Label^ accountLabel;
-		private: System::Windows::Forms::Panel^ registerPanel;
+		private: DB_Panel^ /*System::Windows::Forms::Panel^*/ registerPanel;
 		private: System::Windows::Forms::TextBox^ registerPassTextBox;
 		private: System::Windows::Forms::Label^ registerPassLabel;
 		private: System::Windows::Forms::TextBox^ registerUserTextBox;
 		private: System::Windows::Forms::Label^ registerUserLabel;
 		private: System::Windows::Forms::Button^ registerButton;
-		private: System::Windows::Forms::Panel^ uaPanel;
+		private: DB_Panel^/*System::Windows::Forms::Panel^*/ uaPanel;
 		private: System::Windows::Forms::TextBox^ uaTextBox;
 		private: System::Windows::Forms::Button^ uaButton;
 		private: System::Windows::Forms::Label^ uaLabelHeading;
@@ -73,6 +74,8 @@ namespace MyNovelList {
 		{
 			// Initialiser for Windows Forms components
 			InitializeComponent();
+
+			InitialisePanels();
 
 			// Hides the user agreement panel
 			uaPanel->Hide();
@@ -134,7 +137,6 @@ namespace MyNovelList {
 			this->incorrectDetailsLabel = (gcnew System::Windows::Forms::Label());
 			this->createAccountLabel = (gcnew System::Windows::Forms::Label());
 			this->accountLabel = (gcnew System::Windows::Forms::Label());
-			this->registerPanel = (gcnew System::Windows::Forms::Panel());
 			this->registerCancelButton = (gcnew System::Windows::Forms::Button());
 			this->registerSameUsernameLabel = (gcnew System::Windows::Forms::Label());
 			this->registerNoTextLabel = (gcnew System::Windows::Forms::Label());
@@ -144,12 +146,9 @@ namespace MyNovelList {
 			this->registerUserLabel = (gcnew System::Windows::Forms::Label());
 			this->registerButton = (gcnew System::Windows::Forms::Button());
 			this->registerLabel = (gcnew System::Windows::Forms::Label());
-			this->uaPanel = (gcnew System::Windows::Forms::Panel());
 			this->uaTextBox = (gcnew System::Windows::Forms::TextBox());
 			this->uaButton = (gcnew System::Windows::Forms::Button());
 			this->uaLabelHeading = (gcnew System::Windows::Forms::Label());
-			this->registerPanel->SuspendLayout();
-			this->uaPanel->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// signInLabel
@@ -159,7 +158,7 @@ namespace MyNovelList {
 			this->signInLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 28.125F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->signInLabel->ForeColor = System::Drawing::Color::White;
-			this->signInLabel->Location = System::Drawing::Point(188, 186);
+			this->signInLabel->Location = System::Drawing::Point(188, 187);
 			this->signInLabel->Name = L"signInLabel";
 			this->signInLabel->Size = System::Drawing::Size(271, 85);
 			this->signInLabel->TabIndex = 0;
@@ -173,7 +172,7 @@ namespace MyNovelList {
 			this->usernameLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->usernameLabel->ForeColor = System::Drawing::Color::White;
-			this->usernameLabel->Location = System::Drawing::Point(194, 343);
+			this->usernameLabel->Location = System::Drawing::Point(195, 343);
 			this->usernameLabel->Name = L"usernameLabel";
 			this->usernameLabel->Size = System::Drawing::Size(233, 51);
 			this->usernameLabel->TabIndex = 1;
@@ -208,7 +207,7 @@ namespace MyNovelList {
 			this->passwordLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->passwordLabel->ForeColor = System::Drawing::Color::White;
-			this->passwordLabel->Location = System::Drawing::Point(194, 504);
+			this->passwordLabel->Location = System::Drawing::Point(195, 504);
 			this->passwordLabel->Name = L"passwordLabel";
 			this->passwordLabel->Size = System::Drawing::Size(224, 51);
 			this->passwordLabel->TabIndex = 4;
@@ -225,7 +224,7 @@ namespace MyNovelList {
 				static_cast<System::Byte>(0)));
 			this->signInButton->Location = System::Drawing::Point(203, 756);
 			this->signInButton->Name = L"signInButton";
-			this->signInButton->Size = System::Drawing::Size(230, 90);
+			this->signInButton->Size = System::Drawing::Size(229, 91);
 			this->signInButton->TabIndex = 6;
 			this->signInButton->Text = L"Sign In";
 			this->signInButton->UseVisualStyleBackColor = false;
@@ -240,7 +239,7 @@ namespace MyNovelList {
 			this->exitButton->ForeColor = System::Drawing::Color::Wheat;
 			this->exitButton->Location = System::Drawing::Point(473, 756);
 			this->exitButton->Name = L"exitButton";
-			this->exitButton->Size = System::Drawing::Size(230, 90);
+			this->exitButton->Size = System::Drawing::Size(229, 91);
 			this->exitButton->TabIndex = 7;
 			this->exitButton->Text = L"Exit";
 			this->exitButton->UseVisualStyleBackColor = false;
@@ -284,7 +283,7 @@ namespace MyNovelList {
 			this->copyLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 7.875F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->copyLabel->ForeColor = System::Drawing::Color::White;
-			this->copyLabel->Location = System::Drawing::Point(200, 1014);
+			this->copyLabel->Location = System::Drawing::Point(200, 1013);
 			this->copyLabel->Name = L"copyLabel";
 			this->copyLabel->Size = System::Drawing::Size(503, 25);
 			this->copyLabel->TabIndex = 12;
@@ -298,7 +297,7 @@ namespace MyNovelList {
 			this->mnlLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 28.125F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->mnlLabel->ForeColor = System::Drawing::Color::White;
-			this->mnlLabel->Location = System::Drawing::Point(188, 46);
+			this->mnlLabel->Location = System::Drawing::Point(188, 45);
 			this->mnlLabel->Name = L"mnlLabel";
 			this->mnlLabel->Size = System::Drawing::Size(448, 85);
 			this->mnlLabel->TabIndex = 13;
@@ -328,7 +327,7 @@ namespace MyNovelList {
 			this->createAccountLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.125F, System::Drawing::FontStyle::Underline,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
 			this->createAccountLabel->ForeColor = System::Drawing::Color::Wheat;
-			this->createAccountLabel->Location = System::Drawing::Point(510, 927);
+			this->createAccountLabel->Location = System::Drawing::Point(509, 927);
 			this->createAccountLabel->Name = L"createAccountLabel";
 			this->createAccountLabel->Size = System::Drawing::Size(96, 31);
 			this->createAccountLabel->TabIndex = 15;
@@ -350,25 +349,6 @@ namespace MyNovelList {
 			this->accountLabel->Text = L"Don\'t have an account\?";
 			this->accountLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			// 
-			// registerPanel
-			// 
-			this->registerPanel->BackColor = System::Drawing::SystemColors::Control;
-			this->registerPanel->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"registerPanel.BackgroundImage")));
-			this->registerPanel->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
-			this->registerPanel->Controls->Add(this->registerCancelButton);
-			this->registerPanel->Controls->Add(this->registerSameUsernameLabel);
-			this->registerPanel->Controls->Add(this->registerNoTextLabel);
-			this->registerPanel->Controls->Add(this->registerPassTextBox);
-			this->registerPanel->Controls->Add(this->registerPassLabel);
-			this->registerPanel->Controls->Add(this->registerUserTextBox);
-			this->registerPanel->Controls->Add(this->registerUserLabel);
-			this->registerPanel->Controls->Add(this->registerButton);
-			this->registerPanel->Controls->Add(this->registerLabel);
-			this->registerPanel->Location = System::Drawing::Point(0, 0);
-			this->registerPanel->Name = L"registerPanel";
-			this->registerPanel->Size = System::Drawing::Size(1920, 1080);
-			this->registerPanel->TabIndex = 17;
-			// 
 			// registerCancelButton
 			// 
 			this->registerCancelButton->BackColor = System::Drawing::Color::Transparent;
@@ -376,9 +356,10 @@ namespace MyNovelList {
 			this->registerCancelButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
 			this->registerCancelButton->ForeColor = System::Drawing::Color::Wheat;
-			this->registerCancelButton->Location = System::Drawing::Point(476, 762);
+			this->registerCancelButton->Location = System::Drawing::Point(357, 572);
+			this->registerCancelButton->Margin = System::Windows::Forms::Padding(2);
 			this->registerCancelButton->Name = L"registerCancelButton";
-			this->registerCancelButton->Size = System::Drawing::Size(230, 90);
+			this->registerCancelButton->Size = System::Drawing::Size(172, 68);
 			this->registerCancelButton->TabIndex = 21;
 			this->registerCancelButton->Text = L"Cancel";
 			this->registerCancelButton->UseVisualStyleBackColor = false;
@@ -391,9 +372,10 @@ namespace MyNovelList {
 			this->registerSameUsernameLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.125F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
 			this->registerSameUsernameLabel->ForeColor = System::Drawing::Color::Red;
-			this->registerSameUsernameLabel->Location = System::Drawing::Point(711, 458);
+			this->registerSameUsernameLabel->Location = System::Drawing::Point(533, 344);
+			this->registerSameUsernameLabel->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
 			this->registerSameUsernameLabel->Name = L"registerSameUsernameLabel";
-			this->registerSameUsernameLabel->Size = System::Drawing::Size(320, 31);
+			this->registerSameUsernameLabel->Size = System::Drawing::Size(255, 25);
 			this->registerSameUsernameLabel->TabIndex = 20;
 			this->registerSameUsernameLabel->Text = L"Username already exists!";
 			this->registerSameUsernameLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
@@ -406,9 +388,10 @@ namespace MyNovelList {
 			this->registerNoTextLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.125F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
 			this->registerNoTextLabel->ForeColor = System::Drawing::Color::Red;
-			this->registerNoTextLabel->Location = System::Drawing::Point(199, 871);
+			this->registerNoTextLabel->Location = System::Drawing::Point(149, 653);
+			this->registerNoTextLabel->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
 			this->registerNoTextLabel->Name = L"registerNoTextLabel";
-			this->registerNoTextLabel->Size = System::Drawing::Size(507, 31);
+			this->registerNoTextLabel->Size = System::Drawing::Size(403, 25);
 			this->registerNoTextLabel->TabIndex = 19;
 			this->registerNoTextLabel->Text = L"Please enter a Username and Password!";
 			this->registerNoTextLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
@@ -419,9 +402,10 @@ namespace MyNovelList {
 			this->registerPassTextBox->BackColor = System::Drawing::Color::Wheat;
 			this->registerPassTextBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->registerPassTextBox->Location = System::Drawing::Point(205, 613);
+			this->registerPassTextBox->Location = System::Drawing::Point(154, 460);
+			this->registerPassTextBox->Margin = System::Windows::Forms::Padding(2);
 			this->registerPassTextBox->Name = L"registerPassTextBox";
-			this->registerPassTextBox->Size = System::Drawing::Size(500, 44);
+			this->registerPassTextBox->Size = System::Drawing::Size(376, 44);
 			this->registerPassTextBox->TabIndex = 12;
 			this->registerPassTextBox->UseSystemPasswordChar = true;
 			// 
@@ -432,9 +416,10 @@ namespace MyNovelList {
 			this->registerPassLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
 			this->registerPassLabel->ForeColor = System::Drawing::Color::White;
-			this->registerPassLabel->Location = System::Drawing::Point(196, 537);
+			this->registerPassLabel->Location = System::Drawing::Point(147, 403);
+			this->registerPassLabel->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
 			this->registerPassLabel->Name = L"registerPassLabel";
-			this->registerPassLabel->Size = System::Drawing::Size(224, 51);
+			this->registerPassLabel->Size = System::Drawing::Size(171, 38);
 			this->registerPassLabel->TabIndex = 11;
 			this->registerPassLabel->Text = L"Password:";
 			this->registerPassLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
@@ -444,9 +429,10 @@ namespace MyNovelList {
 			this->registerUserTextBox->BackColor = System::Drawing::Color::Wheat;
 			this->registerUserTextBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->registerUserTextBox->Location = System::Drawing::Point(205, 452);
+			this->registerUserTextBox->Location = System::Drawing::Point(154, 339);
+			this->registerUserTextBox->Margin = System::Windows::Forms::Padding(2);
 			this->registerUserTextBox->Name = L"registerUserTextBox";
-			this->registerUserTextBox->Size = System::Drawing::Size(500, 44);
+			this->registerUserTextBox->Size = System::Drawing::Size(376, 44);
 			this->registerUserTextBox->TabIndex = 10;
 			// 
 			// registerUserLabel
@@ -456,9 +442,10 @@ namespace MyNovelList {
 			this->registerUserLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
 			this->registerUserLabel->ForeColor = System::Drawing::Color::White;
-			this->registerUserLabel->Location = System::Drawing::Point(196, 376);
+			this->registerUserLabel->Location = System::Drawing::Point(147, 282);
+			this->registerUserLabel->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
 			this->registerUserLabel->Name = L"registerUserLabel";
-			this->registerUserLabel->Size = System::Drawing::Size(233, 51);
+			this->registerUserLabel->Size = System::Drawing::Size(177, 38);
 			this->registerUserLabel->TabIndex = 9;
 			this->registerUserLabel->Text = L"Username:";
 			this->registerUserLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
@@ -470,9 +457,10 @@ namespace MyNovelList {
 			this->registerButton->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
 			this->registerButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular,
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->registerButton->Location = System::Drawing::Point(205, 762);
+			this->registerButton->Location = System::Drawing::Point(154, 572);
+			this->registerButton->Margin = System::Windows::Forms::Padding(2);
 			this->registerButton->Name = L"registerButton";
-			this->registerButton->Size = System::Drawing::Size(230, 90);
+			this->registerButton->Size = System::Drawing::Size(172, 68);
 			this->registerButton->TabIndex = 8;
 			this->registerButton->Text = L"Create";
 			this->registerButton->UseVisualStyleBackColor = false;
@@ -485,66 +473,34 @@ namespace MyNovelList {
 			this->registerLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 28.125F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->registerLabel->ForeColor = System::Drawing::Color::White;
-			this->registerLabel->Location = System::Drawing::Point(190, 241);
+			this->registerLabel->Location = System::Drawing::Point(142, 181);
+			this->registerLabel->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
 			this->registerLabel->Name = L"registerLabel";
-			this->registerLabel->Size = System::Drawing::Size(440, 85);
+			this->registerLabel->Size = System::Drawing::Size(335, 65);
 			this->registerLabel->TabIndex = 7;
 			this->registerLabel->Text = L"Registration";
 			this->registerLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			// 
-			// uaPanel
-			// 
-			this->uaPanel->BackColor = System::Drawing::SystemColors::Control;
-			this->uaPanel->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"uaPanel.BackgroundImage")));
-			this->uaPanel->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
-			this->uaPanel->Controls->Add(this->uaTextBox);
-			this->uaPanel->Controls->Add(this->uaButton);
-			this->uaPanel->Controls->Add(this->uaLabelHeading);
-			this->uaPanel->Location = System::Drawing::Point(0, 0);
-			this->uaPanel->Name = L"uaPanel";
-			this->uaPanel->Size = System::Drawing::Size(1920, 1080);
-			this->uaPanel->TabIndex = 18;
-			// 
 			// uaTextBox
 			// 
-			this->uaTextBox->BackColor = System::Drawing::Color::Wheat;
-			this->uaTextBox->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
-			this->uaTextBox->Location = System::Drawing::Point(205, 398);
-			this->uaTextBox->Multiline = true;
+			this->uaTextBox->Location = System::Drawing::Point(0, 0);
 			this->uaTextBox->Name = L"uaTextBox";
-			this->uaTextBox->ReadOnly = true;
-			this->uaTextBox->Size = System::Drawing::Size(569, 335);
-			this->uaTextBox->TabIndex = 9;
-			this->uaTextBox->Text = resources->GetString(L"uaTextBox.Text");
+			this->uaTextBox->Size = System::Drawing::Size(100, 31);
+			this->uaTextBox->TabIndex = 0;
 			// 
 			// uaButton
 			// 
-			this->uaButton->BackColor = System::Drawing::Color::Wheat;
-			this->uaButton->FlatAppearance->BorderSize = 0;
-			this->uaButton->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->uaButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(0)));
-			this->uaButton->Location = System::Drawing::Point(205, 811);
+			this->uaButton->Location = System::Drawing::Point(0, 0);
 			this->uaButton->Name = L"uaButton";
-			this->uaButton->Size = System::Drawing::Size(230, 90);
-			this->uaButton->TabIndex = 8;
-			this->uaButton->Text = L"Ok";
-			this->uaButton->UseVisualStyleBackColor = false;
-			this->uaButton->Click += gcnew System::EventHandler(this, &MNL_SignIn::uaButton_Click);
+			this->uaButton->Size = System::Drawing::Size(75, 23);
+			this->uaButton->TabIndex = 0;
 			// 
 			// uaLabelHeading
 			// 
-			this->uaLabelHeading->AutoSize = true;
-			this->uaLabelHeading->BackColor = System::Drawing::Color::Transparent;
-			this->uaLabelHeading->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 28.125F, System::Drawing::FontStyle::Regular,
-				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->uaLabelHeading->ForeColor = System::Drawing::Color::White;
-			this->uaLabelHeading->Location = System::Drawing::Point(190, 241);
+			this->uaLabelHeading->Location = System::Drawing::Point(0, 0);
 			this->uaLabelHeading->Name = L"uaLabelHeading";
-			this->uaLabelHeading->Size = System::Drawing::Size(584, 85);
-			this->uaLabelHeading->TabIndex = 7;
-			this->uaLabelHeading->Text = L"User Agreement";
-			this->uaLabelHeading->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->uaLabelHeading->Size = System::Drawing::Size(100, 23);
+			this->uaLabelHeading->TabIndex = 0;
 			// 
 			// MNL_SignIn
 			// 
@@ -567,8 +523,6 @@ namespace MyNovelList {
 			this->Controls->Add(this->usernameTextBox);
 			this->Controls->Add(this->usernameLabel);
 			this->Controls->Add(this->signInLabel);
-			this->Controls->Add(this->registerPanel);
-			this->Controls->Add(this->uaPanel);
 			this->DoubleBuffered = true;
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
 			this->Name = L"MNL_SignIn";
@@ -577,15 +531,224 @@ namespace MyNovelList {
 			this->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &MNL_SignIn::MNL_SignIn_MouseDown);
 			this->MouseMove += gcnew System::Windows::Forms::MouseEventHandler(this, &MNL_SignIn::MNL_SignIn_MouseMove);
 			this->MouseUp += gcnew System::Windows::Forms::MouseEventHandler(this, &MNL_SignIn::MNL_SignIn_MouseUp);
-			this->registerPanel->ResumeLayout(false);
-			this->registerPanel->PerformLayout();
-			this->uaPanel->ResumeLayout(false);
-			this->uaPanel->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
 		}
 #pragma endregion
+
+		void InitialisePanels()
+		{
+			this->uaPanel = (gcnew DB_Panel);
+			this->uaPanel->SuspendLayout();
+
+			this->registerPanel = (gcnew DB_Panel);
+			this->registerPanel->SuspendLayout();
+
+			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(MNL_SignIn::typeid));
+
+			this->uaPanel->AutoSize = true;
+			this->uaPanel->BackColor = System::Drawing::SystemColors::Control;
+			this->uaPanel->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"uaPanel.BackgroundImage")));
+			this->uaPanel->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+			this->uaPanel->Controls->Add(this->uaTextBox);
+			this->uaPanel->Controls->Add(this->uaButton);
+			this->uaPanel->Controls->Add(this->uaLabelHeading);
+			this->uaPanel->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->uaPanel->Location = System::Drawing::Point(0, 0);
+			this->uaPanel->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+			this->uaPanel->Name = L"uaPanel";
+			this->uaPanel->Size = System::Drawing::Size(1920, 1080);
+			this->uaPanel->TabIndex = 18;
+
+			this->registerPanel->AutoSize = true;
+			this->registerPanel->BackColor = System::Drawing::SystemColors::Control;
+			this->registerPanel->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"registerPanel.BackgroundImage")));
+			this->registerPanel->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+			this->registerPanel->Controls->Add(this->registerCancelButton);
+			this->registerPanel->Controls->Add(this->registerSameUsernameLabel);
+			this->registerPanel->Controls->Add(this->registerNoTextLabel);
+			this->registerPanel->Controls->Add(this->registerPassTextBox);
+			this->registerPanel->Controls->Add(this->registerPassLabel);
+			this->registerPanel->Controls->Add(this->registerUserTextBox);
+			this->registerPanel->Controls->Add(this->registerUserLabel);
+			this->registerPanel->Controls->Add(this->registerButton);
+			this->registerPanel->Controls->Add(this->registerLabel);
+			this->registerPanel->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->registerPanel->Location = System::Drawing::Point(0, 0);
+			this->registerPanel->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+			this->registerPanel->Name = L"registerPanel";
+			this->registerPanel->Size = System::Drawing::Size(1920, 1080);
+			this->registerPanel->TabIndex = 17;
+
+			this->uaTextBox->AutoSize = true;
+			this->uaTextBox->BackColor = System::Drawing::Color::Wheat;
+			this->uaTextBox->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+			this->uaTextBox->Location = System::Drawing::Point(205, 398);
+			this->uaTextBox->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+			this->uaTextBox->Multiline = true;
+			this->uaTextBox->Name = L"uaTextBox";
+			this->uaTextBox->ReadOnly = true;
+			this->uaTextBox->Size = System::Drawing::Size(569, 355);
+			this->uaTextBox->TabIndex = 9;
+			this->uaTextBox->Text = resources->GetString(L"uaTextBox.Text");
+
+			this->uaButton->AutoSize = true;
+			this->uaButton->BackColor = System::Drawing::Color::Wheat;
+			this->uaButton->FlatAppearance->BorderSize = 0;
+			this->uaButton->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->uaButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->uaButton->Location = System::Drawing::Point(205, 811);
+			this->uaButton->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+			this->uaButton->Name = L"uaButton";
+			this->uaButton->Size = System::Drawing::Size(230, 90);
+			this->uaButton->TabIndex = 8;
+			this->uaButton->Text = L"Ok";
+			this->uaButton->UseVisualStyleBackColor = false;
+			this->uaButton->Click += gcnew System::EventHandler(this, &MNL_SignIn::uaButton_Click);
+
+			this->uaLabelHeading->AutoSize = true;
+			this->uaLabelHeading->BackColor = System::Drawing::Color::Transparent;
+			this->uaLabelHeading->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 28.125F, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->uaLabelHeading->ForeColor = System::Drawing::Color::White;
+			this->uaLabelHeading->Location = System::Drawing::Point(190, 241);
+			this->uaLabelHeading->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+			this->uaLabelHeading->Name = L"uaLabelHeading";
+			this->uaLabelHeading->Size = System::Drawing::Size(584, 85);
+			this->uaLabelHeading->TabIndex = 7;
+			this->uaLabelHeading->Text = L"User Agreement";
+			this->uaLabelHeading->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+
+			this->registerCancelButton->AutoSize = true;
+			this->registerCancelButton->BackColor = System::Drawing::Color::Transparent;
+			this->registerCancelButton->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->registerCancelButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->registerCancelButton->ForeColor = System::Drawing::Color::Wheat;
+			this->registerCancelButton->Location = System::Drawing::Point(357, 572);
+			this->registerCancelButton->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+			this->registerCancelButton->Name = L"registerCancelButton";
+			this->registerCancelButton->Size = System::Drawing::Size(172, 68);
+			this->registerCancelButton->TabIndex = 21;
+			this->registerCancelButton->Text = L"Cancel";
+			this->registerCancelButton->UseVisualStyleBackColor = false;
+			this->registerCancelButton->Click += gcnew System::EventHandler(this, &MNL_SignIn::registerCancelButton_Click);
+
+			this->registerSameUsernameLabel->AutoSize = true;
+			this->registerSameUsernameLabel->BackColor = System::Drawing::Color::Transparent;
+			this->registerSameUsernameLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.125F, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->registerSameUsernameLabel->ForeColor = System::Drawing::Color::Red;
+			this->registerSameUsernameLabel->Location = System::Drawing::Point(533, 344);
+			this->registerSameUsernameLabel->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+			this->registerSameUsernameLabel->Name = L"registerSameUsernameLabel";
+			this->registerSameUsernameLabel->Size = System::Drawing::Size(255, 25);
+			this->registerSameUsernameLabel->TabIndex = 20;
+			this->registerSameUsernameLabel->Text = L"Username already exists!";
+			this->registerSameUsernameLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->registerSameUsernameLabel->Visible = false;
+
+			this->registerNoTextLabel->AutoSize = true;
+			this->registerNoTextLabel->BackColor = System::Drawing::Color::Transparent;
+			this->registerNoTextLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10.125F, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->registerNoTextLabel->ForeColor = System::Drawing::Color::Red;
+			this->registerNoTextLabel->Location = System::Drawing::Point(149, 653);
+			this->registerNoTextLabel->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+			this->registerNoTextLabel->Name = L"registerNoTextLabel";
+			this->registerNoTextLabel->Size = System::Drawing::Size(403, 25);
+			this->registerNoTextLabel->TabIndex = 19;
+			this->registerNoTextLabel->Text = L"Please enter a Username and Password!";
+			this->registerNoTextLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->registerNoTextLabel->Visible = false;
+
+			this->registerPassTextBox->AutoSize = true;
+			this->registerPassTextBox->BackColor = System::Drawing::Color::Wheat;
+			this->registerPassTextBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->registerPassTextBox->Location = System::Drawing::Point(154, 460);
+			this->registerPassTextBox->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+			this->registerPassTextBox->Name = L"registerPassTextBox";
+			this->registerPassTextBox->Size = System::Drawing::Size(376, 35);
+			this->registerPassTextBox->TabIndex = 12;
+			this->registerPassTextBox->UseSystemPasswordChar = true;
+
+			this->registerPassLabel->AutoSize = true;
+			this->registerPassLabel->BackColor = System::Drawing::Color::Transparent;
+			this->registerPassLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->registerPassLabel->ForeColor = System::Drawing::Color::White;
+			this->registerPassLabel->Location = System::Drawing::Point(147, 403);
+			this->registerPassLabel->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+			this->registerPassLabel->Name = L"registerPassLabel";
+			this->registerPassLabel->Size = System::Drawing::Size(171, 38);
+			this->registerPassLabel->TabIndex = 11;
+			this->registerPassLabel->Text = L"Password:";
+			this->registerPassLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+
+			this->registerUserTextBox->AutoSize = true;
+			this->registerUserTextBox->BackColor = System::Drawing::Color::Wheat;
+			this->registerUserTextBox->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->registerUserTextBox->Location = System::Drawing::Point(154, 339);
+			this->registerUserTextBox->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+			this->registerUserTextBox->Name = L"registerUserTextBox";
+			this->registerUserTextBox->Size = System::Drawing::Size(376, 35);
+			this->registerUserTextBox->TabIndex = 10;
+
+			this->registerUserLabel->AutoSize = true;
+			this->registerUserLabel->BackColor = System::Drawing::Color::Transparent;
+			this->registerUserLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->registerUserLabel->ForeColor = System::Drawing::Color::White;
+			this->registerUserLabel->Location = System::Drawing::Point(147, 282);
+			this->registerUserLabel->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+			this->registerUserLabel->Name = L"registerUserLabel";
+			this->registerUserLabel->Size = System::Drawing::Size(177, 38);
+			this->registerUserLabel->TabIndex = 9;
+			this->registerUserLabel->Text = L"Username:";
+			this->registerUserLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+
+			this->registerButton->AutoSize = true;
+			this->registerButton->BackColor = System::Drawing::Color::Wheat;
+			this->registerButton->FlatAppearance->BorderSize = 0;
+			this->registerButton->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->registerButton->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 16.125F, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->registerButton->Location = System::Drawing::Point(154, 572);
+			this->registerButton->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+			this->registerButton->Name = L"registerButton";
+			this->registerButton->Size = System::Drawing::Size(172, 68);
+			this->registerButton->TabIndex = 8;
+			this->registerButton->Text = L"Create";
+			this->registerButton->UseVisualStyleBackColor = false;
+			this->registerButton->Click += gcnew System::EventHandler(this, &MNL_SignIn::registerButton_Click);
+
+			this->registerLabel->AutoSize = true;
+			this->registerLabel->BackColor = System::Drawing::Color::Transparent;
+			this->registerLabel->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 28.125F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->registerLabel->ForeColor = System::Drawing::Color::White;
+			this->registerLabel->Location = System::Drawing::Point(142, 181);
+			this->registerLabel->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+			this->registerLabel->Name = L"registerLabel";
+			this->registerLabel->Size = System::Drawing::Size(335, 65);
+			this->registerLabel->TabIndex = 7;
+			this->registerLabel->Text = L"Registration";
+			this->registerLabel->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+
+			this->uaPanel->Scale(0.5, 0.5);
+			this->registerPanel->Scale(0.65, 0.65);
+
+			this->Controls->Add(this->uaPanel);
+			this->Controls->Add(this->registerPanel);
+			this->uaPanel->ResumeLayout(false);
+			this->uaPanel->PerformLayout();
+			this->registerPanel->ResumeLayout(false);
+			this->registerPanel->PerformLayout();
+		}
 
 		void FillUsernameVector()
 		{
